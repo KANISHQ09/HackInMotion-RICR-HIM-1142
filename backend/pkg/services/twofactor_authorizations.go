@@ -7,14 +7,14 @@ import (
 	"github.com/pquerna/otp/totp"
 	"xorm.io/xorm"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/datastore"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/locales"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/settings"
-	"github.com/spendly/spendly/pkg/utils"
-	"github.com/spendly/spendly/pkg/uuid"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/datastore"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/locales"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/uuid"
 )
 
 const (

@@ -9,8 +9,8 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // MinIOObjectStorage represents MinIO object storage

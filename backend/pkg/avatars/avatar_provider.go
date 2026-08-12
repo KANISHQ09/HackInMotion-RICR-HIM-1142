@@ -1,6 +1,6 @@
 package avatars
 
-import "github.com/spendly/spendly/pkg/models"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 
 // AvatarProvider is user avatar provider interface
 type AvatarProvider interface {

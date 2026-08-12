@@ -3,7 +3,7 @@ package validators
 import (
 	"github.com/go-playground/validator/v10"
 
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // ValidTagFilter returns whether the given tag filter is valid

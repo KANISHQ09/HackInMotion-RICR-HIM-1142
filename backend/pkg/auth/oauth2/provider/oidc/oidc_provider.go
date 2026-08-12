@@ -7,13 +7,13 @@ import (
 
 	"github.com/coreos/go-oidc/v3/oidc"
 
-	"github.com/spendly/spendly/pkg/auth/oauth2/data"
-	"github.com/spendly/spendly/pkg/auth/oauth2/provider"
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/httpclient"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/auth/oauth2/data"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/auth/oauth2/provider"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/httpclient"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // OIDCClaims represents OIDC claims

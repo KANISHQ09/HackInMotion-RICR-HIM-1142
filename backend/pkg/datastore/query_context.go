@@ -6,7 +6,7 @@ import (
 
 	"xorm.io/xorm/log"
 
-	"github.com/spendly/spendly/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 )
 
 // XOrmContextAdapter represents the context adapter for xorm

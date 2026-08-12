@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/settings"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 func TestExchangeRatesApiLatestExchangeRateHandler_CentralBankOfArgentinaDataSource(t *testing.T) {

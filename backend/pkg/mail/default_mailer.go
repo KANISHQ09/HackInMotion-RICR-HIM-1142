@@ -6,9 +6,9 @@ import (
 
 	"gopkg.in/mail.v2"
 
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/settings"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // DefaultMailer represents default mailer

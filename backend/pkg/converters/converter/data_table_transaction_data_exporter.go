@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spendly/spendly/pkg/converters/datatable"
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/datatable"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // DataTableTransactionDataExporter defines the structure of plain text data table exporter for transaction data

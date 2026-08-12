@@ -10,7 +10,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 const (

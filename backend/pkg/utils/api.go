@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // GetDisplayErrorMessage returns the display error message for given error

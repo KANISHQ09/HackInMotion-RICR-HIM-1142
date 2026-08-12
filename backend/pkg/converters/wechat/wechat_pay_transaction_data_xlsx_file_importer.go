@@ -3,13 +3,13 @@ package wechat
 import (
 	"time"
 
-	"github.com/spendly/spendly/pkg/converters/converter"
-	"github.com/spendly/spendly/pkg/converters/datatable"
-	"github.com/spendly/spendly/pkg/converters/excel"
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/converter"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/datatable"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/excel"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // wechatPayTransactionDataXlsxFileImporter defines the structure of wechatPay xlsx importer for transaction data

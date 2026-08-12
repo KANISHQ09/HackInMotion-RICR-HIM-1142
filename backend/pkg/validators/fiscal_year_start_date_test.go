@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/spendly/spendly/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 )
 
 type fiscalYearStartContainer struct {

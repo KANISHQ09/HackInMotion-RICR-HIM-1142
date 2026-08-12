@@ -6,8 +6,8 @@ import (
 
 	"github.com/xuri/excelize/v2"
 
-	"github.com/spendly/spendly/pkg/converters/datatable"
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/datatable"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // excelOOXMLSheet defines the structure of excel (Office Open XML) file sheet

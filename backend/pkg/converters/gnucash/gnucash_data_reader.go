@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/net/html/charset"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // gnucashDatabaseReader defines the structure of gnucash database reader

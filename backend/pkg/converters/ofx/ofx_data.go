@@ -3,7 +3,7 @@ package ofx
 import (
 	"encoding/xml"
 
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // oFXDeclarationVersion represents the declaration version of open financial exchange (ofx) file

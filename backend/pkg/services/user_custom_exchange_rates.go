@@ -4,10 +4,10 @@ import (
 	"time"
 	"xorm.io/xorm"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/datastore"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/datastore"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // UserCustomExchangeRatesService represents user custom exchange rate data service

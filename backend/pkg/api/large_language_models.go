@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/llm"
-	"github.com/spendly/spendly/pkg/llm/data"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/services"
-	"github.com/spendly/spendly/pkg/settings"
-	"github.com/spendly/spendly/pkg/templates"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/data"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/services"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/templates"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // LargeLanguageModelsApi represents large language models api

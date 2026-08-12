@@ -4,7 +4,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // Length and mask of all information in uuid

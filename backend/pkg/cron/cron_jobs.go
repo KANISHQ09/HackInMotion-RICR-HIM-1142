@@ -3,8 +3,8 @@ package cron
 import (
 	"time"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/services"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/services"
 )
 
 // RemoveExpiredTokensJob represents the cron job which periodically remove expired user tokens from the database

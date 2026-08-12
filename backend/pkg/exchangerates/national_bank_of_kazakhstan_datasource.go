@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/utils"
-	"github.com/spendly/spendly/pkg/validators"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/validators"
 )
 
 const nationalBankOfKazakhstanExchangeRateUrl = "https://www.nationalbank.kz/rss/rates_all.xml"

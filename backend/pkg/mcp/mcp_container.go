@@ -4,10 +4,10 @@ import (
 	"github.com/invopop/jsonschema"
 	orderedmap "github.com/wk8/go-ordered-map/v2"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // MCPContainer contains the all mcp handlers

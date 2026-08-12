@@ -5,11 +5,11 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/settings"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // MCPQueryAllAccountsBalanceResponse represents the response structure for querying accounts balance

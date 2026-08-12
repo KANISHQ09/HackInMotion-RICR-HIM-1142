@@ -3,8 +3,8 @@ package duplicatechecker
 import (
 	"time"
 
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // DuplicateCheckerContainer contains the current duplicate checker

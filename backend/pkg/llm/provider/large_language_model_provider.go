@@ -1,9 +1,9 @@
 package provider
 
 import (
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/llm/data"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/data"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // LargeLanguageModelProvider defines the structure of large language model provider

@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 const nationalBankOfPolandMinimumRequiredContent = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +

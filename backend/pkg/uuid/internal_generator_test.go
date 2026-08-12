@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 func TestGenerateUuid(t *testing.T) {

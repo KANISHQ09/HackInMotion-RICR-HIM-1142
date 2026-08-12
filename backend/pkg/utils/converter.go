@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // IntToString returns the textual representation of this number

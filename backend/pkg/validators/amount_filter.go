@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // ValidAmountFilter returns whether the given amount filter is valid

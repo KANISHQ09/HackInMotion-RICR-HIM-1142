@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // LevelOneAccountParentId represents the parent id of level-one account

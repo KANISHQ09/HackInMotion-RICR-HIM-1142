@@ -6,8 +6,8 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 func TestValidTransactionAmount(t *testing.T) {

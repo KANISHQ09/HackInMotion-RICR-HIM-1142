@@ -6,8 +6,8 @@ import (
 
 	"github.com/extrame/xls"
 
-	"github.com/spendly/spendly/pkg/converters/datatable"
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/datatable"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // ExcelMSCFBFileBasicDataTable defines the structure of excel (microsoft compound file binary) file data table

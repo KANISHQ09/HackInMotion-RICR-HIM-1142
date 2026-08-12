@@ -17,14 +17,14 @@ import (
 	"golang.org/x/text/encoding/unicode/utf32"
 	"golang.org/x/text/transform"
 
-	"github.com/spendly/spendly/pkg/converters/converter"
-	csvconverter "github.com/spendly/spendly/pkg/converters/csv"
-	"github.com/spendly/spendly/pkg/converters/datatable"
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/models"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/converter"
+	csvconverter "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/csv"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/datatable"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 var supportedFileTypeSeparators = map[string]rune{

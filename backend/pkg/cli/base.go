@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/spendly/spendly/pkg/settings"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 
 // CliUsingConfig represents a cli that need to use config
 type CliUsingConfig struct {

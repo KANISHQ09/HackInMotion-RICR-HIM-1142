@@ -1,6 +1,6 @@
 package custom
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // CustomTransactionDataParser represents the parser for custom transaction data files
 type CustomTransactionDataParser interface {

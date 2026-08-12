@@ -1,8 +1,8 @@
 package datatable
 
 import (
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // TransactionDataTable defines the structure of transaction data table

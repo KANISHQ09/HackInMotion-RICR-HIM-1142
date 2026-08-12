@@ -1,6 +1,6 @@
 package locales
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // GetLocaleTextItems returns the locale text items for the specified locale
 func GetLocaleTextItems(locale string) *LocaleTextItems {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/urfave/cli/v3"
 
-	"github.com/spendly/spendly/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 )
 
 func bindAction(fn core.CliHandlerFunc) cli.ActionFunc {
