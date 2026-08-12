@@ -21,6 +21,16 @@ The data contract (`ai/src/types/transaction.ts`) defines the boundary and stand
 - `CategoryPrediction`: Standardized result produced by categorization engines (`category`, `confidence`, `method`), supporting `rule`, `llm`, and `fallback` classification approaches.
 - Runtime validation is enforced via **Zod** schemas (`transactionSchema` and `categoryPredictionSchema`).
 
+## Transaction Normalization
+
+The transaction normalization layer (`ai/src/normalization/transaction.ts`) cleanses and normalizes raw transaction inputs before passing them downstream to AI categorization, analytics, and intelligence modules:
+
+- **Merchant Text Normalization**: Collapses extra whitespace and normalizes merchant casing consistently (Title Case).
+- **Text Cleaning**: Trims and cleans optional description, category, and account fields.
+- **Amount & Date Normalization**: Converts string/numeric amounts into finite numbers and converts dates into standard ISO-8601 UTC strings.
+- **Type Normalization**: Maps transaction types consistently to supported values (`income`, `expense`, `transfer`).
+- **Validation**: Enforces strict runtime validation via Zod schema, cleanly rejecting invalid inputs.
+
 ## Environment & Configuration
 
 Environment variables can be specified in a `.env` file or passed through standard environment variables:
