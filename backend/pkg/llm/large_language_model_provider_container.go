@@ -1,16 +1,16 @@
 package llm
 
 import (
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/llm/data"
-	"github.com/spendly/spendly/pkg/llm/provider"
-	"github.com/spendly/spendly/pkg/llm/provider/anthropic"
-	"github.com/spendly/spendly/pkg/llm/provider/googleai"
-	"github.com/spendly/spendly/pkg/llm/provider/lmstudio"
-	"github.com/spendly/spendly/pkg/llm/provider/ollama"
-	"github.com/spendly/spendly/pkg/llm/provider/openai"
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/data"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider/anthropic"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider/googleai"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider/lmstudio"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider/ollama"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm/provider/openai"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // LargeLanguageModelProviderContainer contains the current large language model provider

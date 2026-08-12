@@ -1,6 +1,6 @@
 package data
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // OAuth2UserInfo represents the user info retrieved from OAuth 2.0 provider
 type OAuth2UserInfo struct {

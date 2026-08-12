@@ -1,8 +1,8 @@
 package datatable
 
 import (
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/models"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
 )
 
 // mergedTransactionDataTable defines the structure of merged transaction data table which merges multiple transaction data tables

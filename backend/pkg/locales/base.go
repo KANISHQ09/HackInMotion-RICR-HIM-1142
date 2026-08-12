@@ -1,7 +1,7 @@
 package locales
 
 import (
-	"github.com/spendly/spendly/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 )
 
 // LocaleTextItems represents all text items need to be translated

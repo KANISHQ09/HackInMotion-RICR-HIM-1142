@@ -3,7 +3,7 @@ package converter
 import (
 	"strings"
 
-	"github.com/spendly/spendly/pkg/settings"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
 )
 
 // TransactionDataImporterOptions defines the options for transaction data importer

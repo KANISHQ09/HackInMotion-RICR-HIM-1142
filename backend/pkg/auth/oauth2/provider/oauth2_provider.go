@@ -3,8 +3,8 @@ package provider
 import (
 	"golang.org/x/oauth2"
 
-	"github.com/spendly/spendly/pkg/auth/oauth2/data"
-	"github.com/spendly/spendly/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/auth/oauth2/data"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 )
 
 // OAuth2Provider defines the structure of OAuth 2.0 provider

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // UserExternalAuth represents user external auth data stored in database
 type UserExternalAuth struct {

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // ClearDataRequest represents all parameters of clear user data request
 type ClearDataRequest struct {

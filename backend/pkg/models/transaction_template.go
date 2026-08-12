@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // TransactionTemplateType represents transaction template type in database

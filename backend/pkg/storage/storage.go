@@ -1,6 +1,6 @@
 package storage
 
-import "github.com/spendly/spendly/pkg/core"
+import "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 
 // ObjectStorage represents an object storage to store file object
 type ObjectStorage interface {

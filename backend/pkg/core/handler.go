@@ -3,7 +3,7 @@ package core
 import (
 	"net/http/httputil"
 
-	"github.com/spendly/spendly/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 )
 
 // CliHandlerFunc represents the cli handler function

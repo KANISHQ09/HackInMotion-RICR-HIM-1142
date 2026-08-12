@@ -14,16 +14,16 @@ import (
 	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 
-	"github.com/spendly/spendly/pkg/converters/sgml"
-	"github.com/spendly/spendly/pkg/core"
-	"github.com/spendly/spendly/pkg/errs"
-	"github.com/spendly/spendly/pkg/log"
-	"github.com/spendly/spendly/pkg/utils"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/converters/sgml"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
+	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 const ofx1USAsciiEncoding = "usascii"
 const ofx1UnicodeEncoding = "unicode"
-const ofx1UTF8Encoding = "utf-8" // non-standard ofx 1.x encoding, used by some banks (https://github.com/spendly/spendly/issues/48)
+const ofx1UTF8Encoding = "utf-8" // non-standard ofx 1.x encoding, used by some banks (https://github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/issues/48)
 const ofx1SGMLDataFormat = "OFXSGML"
 
 var ofx2HeaderPattern = regexp.MustCompile("<\\?OFX( +[A-Z]+=\"[^=]*\")* *\\?>")
