@@ -13,6 +13,14 @@ In upcoming iterations, this service will handle:
 - **Personalized Insights**: Delivering recommendations and financial advice.
 - **AI Assistant Integration**: Powering conversational features and intelligent workflows.
 
+## Data Contract
+
+The data contract (`ai/src/types/transaction.ts`) defines the boundary and standardized interface between the main application data models and the AI service:
+
+- `NormalizedTransaction`: Universal representation of financial transactions (`id`, `userId`, `amount`, `type`, `date`, `merchant`, `description`, `category`, `accountId`, `currency`).
+- `CategoryPrediction`: Standardized result produced by categorization engines (`category`, `confidence`, `method`), supporting `rule`, `llm`, and `fallback` classification approaches.
+- Runtime validation is enforced via **Zod** schemas (`transactionSchema` and `categoryPredictionSchema`).
+
 ## Environment & Configuration
 
 Environment variables can be specified in a `.env` file or passed through standard environment variables:
@@ -33,17 +41,20 @@ Health check endpoint returning service status.
 }
 ```
 
-## Running the Service
+## Running & Testing
 
 ```bash
-# Install dependencies (if needed)
+# Install dependencies
 npm install
+
+# Run tests
+npm test
+
+# Check TypeScript types
+npm run build
 
 # Run in development mode (Node 22+)
 npm run dev
-
-# Build TypeScript to JavaScript
-npm run build
 
 # Start production server
 npm start
