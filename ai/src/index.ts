@@ -1,75 +1,118 @@
 import http from 'node:http';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { getConfig } from './config.js';
+import { normalizeTransaction } from './normalization/transaction.js';
+import { categorizeTransaction } from './categorization/index.js';
 
-// Helper function to load environment variables from a .env file if present
-function loadEnv(): void {
-  try {
-    let baseDir = process.env.PWD || '';
-    if (!baseDir) {
-      try {
-        const __filename = fileURLToPath(import.meta.url);
-        baseDir = path.dirname(path.dirname(__filename));
-      } catch {
-        baseDir = '.';
+const config = getConfig();
+const PORT = config.port;
+const HOST = config.host;
+
+/**
+ * Helper to read request body as a string
+ */
+function readRequestBody(req: http.IncomingMessage): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+      if (body.length > 1e6) {
+        // 1MB size limit safeguard
+        req.destroy();
+        reject(new Error('Request body payload size limit exceeded'));
       }
-    }
-    const envPath = path.resolve(baseDir, '.env');
-    if (fs.existsSync(envPath)) {
-      const envContent = fs.readFileSync(envPath, 'utf-8');
-      const lines = envContent.split('\n');
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
-          const [key, ...valueParts] = trimmed.split('=');
-          const envKey = key.trim();
-          const envVal = valueParts.join('=').trim().replace(/^["']|["']$/g, '');
-          if (envKey && process.env[envKey] === undefined) {
-            process.env[envKey] = envVal;
-          }
-        }
-      }
-    }
-  } catch {
-    // Ignore errors if env loading fails
-  }
+    });
+    req.on('end', () => resolve(body));
+    req.on('error', (err) => reject(err));
+  });
 }
 
-// Load environment configuration
-loadEnv();
-
-const PORT = Number(process.env.PORT) || 3001;
-const HOST = process.env.HOST || '127.0.0.1';
+/**
+ * Helper to send JSON responses
+ */
+function sendJson(res: http.ServerResponse, statusCode: number, payload: unknown): void {
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(payload));
+}
 
 // Create a minimal lightweight HTTP server
-export const server = http.createServer((req, res) => {
+export const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
   const method = (req.method || 'GET').toUpperCase();
 
   // GET /health
   if (method === 'GET' && url.pathname === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(
-      JSON.stringify({
-        status: 'ok',
-        service: 'ai',
-      })
-    );
+    sendJson(res, 200, {
+      status: 'ok',
+      service: 'ai',
+    });
     return;
   }
 
+  // POST /api/v1/categorize
+  if (method === 'POST' && url.pathname === '/api/v1/categorize') {
+    try {
+      const rawBody = await readRequestBody(req);
+      if (!rawBody.trim()) {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Missing request body',
+        });
+        return;
+      }
+
+      let parsedBody: Record<string, unknown>;
+      try {
+        parsedBody = JSON.parse(rawBody);
+      } catch {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Invalid JSON payload in request body',
+        });
+        return;
+      }
+
+      // Support both { "transaction": { ... } } and direct { "id": "...", ... }
+      const rawTx = (parsedBody.transaction && typeof parsedBody.transaction === 'object'
+        ? parsedBody.transaction
+        : parsedBody) as Record<string, unknown>;
+
+      let normalizedTx;
+      try {
+        normalizedTx = normalizeTransaction(rawTx);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Invalid transaction payload';
+        sendJson(res, 400, {
+          success: false,
+          error: `Transaction validation failed: ${message}`,
+        });
+        return;
+      }
+
+      const prediction = await categorizeTransaction(normalizedTx);
+
+      sendJson(res, 200, {
+        success: true,
+        prediction,
+      });
+      return;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Internal categorization error';
+      sendJson(res, 500, {
+        success: false,
+        error: message,
+      });
+      return;
+    }
+  }
+
   // Fallback for unhandled routes
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(
-    JSON.stringify({
-      error: 'Not Found',
-    })
-  );
+  sendJson(res, 404, {
+    error: 'Not Found',
+  });
 });
 
 // Start the HTTP server if run directly
-if (process.argv[1] && process.argv[1].endsWith('index.ts') || process.argv[1] && process.argv[1].endsWith('index.js')) {
+if (process.argv[1] && (process.argv[1].endsWith('index.ts') || process.argv[1].endsWith('index.js'))) {
   server.listen(PORT, HOST, () => {
     console.log(`[AI Service] Server listening on http://${HOST}:${PORT}`);
   });
