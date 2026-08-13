@@ -192,6 +192,31 @@ test('HTTP POST /api/v1/simulate rejects invalid simulation scenario with 400', 
   assert.equal(res.body.success, false);
 });
 
+test('HTTP POST /api/v1/insights generates prioritized financial intelligence', async () => {
+  const payload = {
+    context: {
+      currency: 'INR',
+      summary: { income: 65000, expenses: 48200, savings: 16800, savingsRate: 25.85 },
+      categories: [
+        { category: 'Food', amount: 8400, percentage: 17.43, changePercent: 42.37 },
+        { category: 'Rent', amount: 15000, percentage: 31.12 },
+      ],
+      budgets: [
+        { category: 'Food', limitAmount: 8000, spent: 8400, remaining: -400, progress: 105.0 },
+      ],
+      healthScore: { score: 72 },
+    },
+  };
+
+  const res = await postJson('/api/v1/insights', payload);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.success, true);
+  assert.equal(res.body.data.summary.healthScore, 72);
+  assert.ok(res.body.data.insights.length >= 2);
+  assert.ok(res.body.data.recommendations.length >= 1);
+  assert.ok(res.body.data.healthExplanation.length > 10);
+});
+
 test('HTTP GET /unhandled-route returns 404 Not Found', async () => {
   const res = await getJson('/unhandled-route');
   assert.equal(res.status, 404);
