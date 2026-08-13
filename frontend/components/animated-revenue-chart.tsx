@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { TrendingUp, Home, Key, Calendar, Shield } from "lucide-react"
 
 const revenueCategories = [
@@ -19,39 +21,39 @@ function generateRandomData() {
 
 export function AnimatedRevenueChart() {
   const [data, setData] = useState(generateRandomData())
+  const [totalRevenue, setTotalRevenue] = useState(0)
   const [growth, setGrowth] = useState(12.5)
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const totalRevenue = useMemo(() => data.reduce((sum, item) => sum + item.value, 0), [data])
-
-  const chartGradient = useMemo(() => {
-    let start = 0
-
-    return data
-      .map((item) => {
-        const end = start + (item.value / totalRevenue) * 100
-        const segment = `${item.color} ${start}% ${end}%`
-        start = end
-        return segment
-      })
-      .join(", ")
+  useEffect(() => {
+    const total = data.reduce((sum, item) => sum + item.value, 0)
+    setTotalRevenue(total)
   }, [data])
 
+  // Animate data changes
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (reduceMotion) return
-
     const interval = setInterval(() => {
       setData(generateRandomData())
       setGrowth(Math.round((Math.random() * 20 + 5) * 10) / 10)
-      setActiveIndex((prev) => (prev + 1) % revenueCategories.length)
     }, 4000)
     return () => clearInterval(interval)
   }, [])
 
+  // Cycle through active segments
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % revenueCategories.length)
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div
-      className="w-full max-w-md mx-auto rounded-3xl bg-white p-8 animate-fade-up"
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+      viewport={{ once: true }}
+      className="w-full max-w-md mx-auto rounded-3xl bg-white p-8"
       style={{
         boxShadow:
           "rgba(14, 63, 126, 0.06) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.06) 0px 6px 6px -3px, rgba(42, 51, 70, 0.06) 0px 12px 12px -6px, rgba(14, 63, 126, 0.06) 0px 24px 24px -12px",
@@ -63,37 +65,72 @@ export function AnimatedRevenueChart() {
           <p className="text-sm text-slate-500">This Month</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-slate-900 transition-opacity">
+          <motion.p
+            key={totalRevenue}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold text-slate-900"
+          >
             ${totalRevenue.toLocaleString()}
-          </p>
-          <div className="flex items-center justify-end gap-1">
+          </motion.p>
+          <motion.div
+            key={growth}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-end gap-1"
+          >
             <TrendingUp className="w-3 h-3 text-emerald-600" />
             <p className="text-sm font-medium text-emerald-600">+{growth}%</p>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       <div className="h-56 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div
-            className="h-44 w-44 rounded-full p-[26px] transition-all duration-700"
-            style={{
-              background: `conic-gradient(${chartGradient})`,
-              boxShadow: `0 0 28px ${data[activeIndex].color}40`,
-            }}
-          >
-            <div className="h-full w-full rounded-full bg-white" />
-          </div>
-        </div>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={55}
+              outerRadius={85}
+              paddingAngle={3}
+              dataKey="value"
+              animationDuration={1000}
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  opacity={index === activeIndex ? 1 : 0.6}
+                  style={{
+                    filter: index === activeIndex ? "drop-shadow(0 0 8px " + entry.color + ")" : "none",
+                    transition: "all 0.5s ease",
+                  }}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
 
+        {/* Center content */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-center transition-transform duration-300">
-            {(() => {
-              const Icon = data[activeIndex].icon
-              return <Icon className="w-6 h-6 mx-auto mb-1" style={{ color: data[activeIndex].color }} />
-            })()}
-            <p className="text-xs text-slate-500">{data[activeIndex].name}</p>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+              className="text-center"
+            >
+              {(() => {
+                const Icon = data[activeIndex].icon
+                return <Icon className="w-6 h-6 mx-auto mb-1" style={{ color: data[activeIndex].color }} />
+              })()}
+              <p className="text-xs text-slate-500">{data[activeIndex].name}</p>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
@@ -102,8 +139,15 @@ export function AnimatedRevenueChart() {
           const Icon = item.icon
           const percentage = ((item.value / totalRevenue) * 100).toFixed(0)
           return (
-            <div
+            <motion.div
               key={item.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                scale: index === activeIndex ? 1.02 : 1,
+              }}
+              transition={{ delay: index * 0.1, duration: 0.3 }}
               className={`flex items-center gap-3 p-2 rounded-xl transition-colors ${
                 index === activeIndex ? "bg-slate-50" : ""
               }`}
@@ -118,10 +162,10 @@ export function AnimatedRevenueChart() {
               <div className="text-right">
                 <span className="text-xs text-slate-400">{percentage}%</span>
               </div>
-            </div>
+            </motion.div>
           )
         })}
       </div>
-    </div>
+    </motion.div>
   )
 }

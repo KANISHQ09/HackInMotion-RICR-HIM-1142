@@ -1,5 +1,6 @@
 "use client"
-import { useEffect, useState } from "react"
+
+import { useEffect, useState, useRef } from "react"
 
 function useCountUp(end: number, duration = 2000, suffix = "") {
   const [count, setCount] = useState(0)
@@ -32,9 +33,10 @@ function useCountUp(end: number, duration = 2000, suffix = "") {
 
 export function StatsSection() {
   const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
 
-  const homes = useCountUp(15, 2000, "K+")
-  const cities = useCountUp(120, 2000, "")
+  const transactions = useCountUp(15, 2000, "K+")
+  const insights = useCountUp(120, 2000, "+")
   const users = useCountUp(50, 2000, "K+")
 
   useEffect(() => {
@@ -42,43 +44,69 @@ export function StatsSection() {
       ([entry]) => {
         if (entry.isIntersecting && !isVisible) {
           setIsVisible(true)
-          homes.start()
-          cities.start()
+          transactions.start()
+          insights.start()
           users.start()
         }
       },
-      { threshold: 0.3 },
+      { threshold: 0.2 },
     )
 
-    const section = document.getElementById("stats-section")
-    if (section) observer.observe(section)
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
 
     return () => observer.disconnect()
   }, [isVisible])
 
   return (
-    <section id="stats-section" className="py-24 px-6 bg-background">
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-          <div
-            className={`text-center transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-          >
-            <p className="font-light text-foreground mb-2 text-6xl md:text-7xl leading-none">{homes.value}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Transactions Categorized</p>
-          </div>
+    <section ref={sectionRef} id="stats-section" className="px-6 bg-background relative overflow-hidden">
+      {/* Background ambient lighting */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div
-            className={`text-center transition-all duration-1000 delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-          >
-            <p className="font-light text-foreground mb-2 text-6xl md:text-7xl leading-none">{cities.value}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Insights Generated</p>
-          </div>
+      <div className="max-w-7xl mx-auto flex flex-col items-center">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <p className="text-xs uppercase tracking-widest text-primary font-semibold mb-3">Live Experience</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Smart Expense Analyzer & Financial Dashboard
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Track expenses, visualize spendings, and gain actionable financial insights seamlessly in real time.
+          </p>
+        </div>
 
+        {/* iPhone Frame with Video Screen Overlay */}
+        <div className="relative mb-20 flex justify-center w-full">
           <div
-            className={`text-center transition-all duration-1000 delay-400 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+            className={`relative w-[280px] sm:w-[320px] md:w-[380px] lg:w-[420px] transition-all duration-1000 transform ${
+              isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-12 scale-95"
+            }`}
           >
-            <p className="font-light text-foreground mb-2 text-6xl md:text-7xl leading-none">{users.value}</p>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Active Users</p>
+            {/* Ambient shadow behind the phone */}
+            <div className="absolute inset-4 bg-black/40 blur-2xl rounded-full z-0" />
+
+            {/* Container for iPhone Frame & Screen Video */}
+            <div className="relative z-10 w-full">
+              {/* Video layer fitted inside the phone screen cutout */}
+              <div className="absolute top-[2.4%] left-[4.6%] w-[90.8%] h-[95.2%] rounded-[36px] sm:rounded-[42px] md:rounded-[50px] overflow-hidden bg-black z-0">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                  src="video.mp4"
+                />
+              </div>
+
+              {/* iPhone Frame PNG Overlay */}
+              <img
+                src="/images/iphone-frame.webp"
+                alt="Spendly Mobile App"
+                className="w-full h-auto relative z-10 pointer-events-none drop-shadow-2xl"
+              />
+            </div>
           </div>
         </div>
       </div>

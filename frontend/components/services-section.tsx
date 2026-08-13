@@ -1,7 +1,6 @@
 "use client"
 
 import { Home, Key, Shield } from "lucide-react"
-import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
 
 const services = [
@@ -22,7 +21,7 @@ const services = [
   },
 ]
 
-function AnimatedIcon({ Icon }: { Icon: any }) {
+function AnimatedIcon({ Icon, delay = 0 }: { Icon: any; delay?: number }) {
   const [isVisible, setIsVisible] = useState(false)
   const iconRef = useRef<HTMLDivElement>(null)
 
@@ -80,12 +79,6 @@ export function ServicesSection() {
 
   return (
     <section id="how-it-works" className="py-32 px-6 pb-24 relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none z-0">
-        <span className="font-bold text-center text-[18vw] sm:text-[16vw] md:text-[14vw] lg:text-[12vw] leading-none tracking-tighter text-zinc-100 whitespace-nowrap">
-          MISSION
-        </span>
-      </div>
-
       <style jsx>{`
         @keyframes drawPath {
           from {
@@ -110,11 +103,9 @@ export function ServicesSection() {
         <div ref={sectionRef} className="relative px-6 lg:px-8 py-16 lg:py-10 mb-32 overflow-hidden rounded-3xl">
           {/* Background image that spans full width */}
           <div className="absolute inset-0 w-full h-full">
-            <Image
+            <img
               src="/images/7aecbceb-cbd3-4cbd-901c-dd0125d41525.webp"
-              alt=""
-              fill
-              sizes="(min-width: 1280px) 1280px, 100vw"
+              alt="Beautiful house"
               className={`w-full h-full object-cover transition-transform duration-1000 ease-out ${
                 isVisible ? "scale-100" : "scale-110"
               }`}
@@ -157,7 +148,7 @@ export function ServicesSection() {
               className="group p-8 rounded-3xl hover:bg-zinc-50 transition-colors duration-300 text-center"
             >
               <div className="mb-6 flex justify-center">
-                <AnimatedIcon Icon={service.icon} />
+                <AnimatedIcon Icon={service.icon} delay={index * 0.2} />
               </div>
               <h3 className="text-xl font-medium mb-3 text-foreground">{service.title}</h3>
               <p className="text-muted-foreground leading-relaxed text-sm">{service.description}</p>

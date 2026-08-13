@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { ArrowUpRight, ArrowRight } from "lucide-react"
 import { AnimatedRevenueChart } from "./animated-revenue-chart"
 
@@ -21,29 +20,23 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/register"
-              className="relative flex min-h-12 items-center justify-center gap-0 overflow-hidden rounded-lg bg-foreground py-1.5 pl-5 pr-1.5 text-background transition-all duration-300 group sm:pl-6"
-            >
-              <span className="whitespace-nowrap pr-3 text-sm sm:pr-4">Create account</span>
+            <button className="relative flex items-center justify-center gap-0 bg-foreground text-background rounded-full pl-6 pr-1.5 py-1.5 transition-all duration-300 group overflow-hidden">
+              <span className="text-sm pr-4">Upload Transactions</span>
               <span className="w-10 h-10 bg-background rounded-full flex items-center justify-center">
                 <ArrowUpRight className="w-4 h-4 text-foreground" />
               </span>
-            </Link>
+            </button>
 
-            <Link
-              href="/login"
-              className="relative flex min-h-12 items-center justify-center gap-0 overflow-hidden rounded-lg border border-border py-1.5 pl-5 pr-1.5 transition-all duration-300 group sm:pl-6"
-            >
-              <span className="absolute inset-0 rounded-lg bg-foreground scale-x-0 origin-right group-hover:scale-x-100 transition-transform duration-300" />
+            <button className="relative flex items-center justify-center gap-0 border border-border rounded-full pl-6 pr-1.5 py-1.5 transition-all duration-300 group overflow-hidden">
+              <span className="absolute inset-0 bg-foreground rounded-full scale-x-0 origin-right group-hover:scale-x-100 transition-transform duration-300" />
               <span className="text-sm text-foreground group-hover:text-background pr-4 relative z-10 transition-colors duration-300">
-                Log in
+                View Sample Dashboard
               </span>
               <span className="w-10 h-10 rounded-full flex items-center justify-center relative z-10">
                 <ArrowRight className="w-4 h-4 text-foreground group-hover:opacity-0 absolute transition-opacity duration-300" />
                 <ArrowUpRight className="w-4 h-4 text-foreground group-hover:text-background opacity-0 group-hover:opacity-100 transition-all duration-300" />
               </span>
-            </Link>
+            </button>
           </div>
         </div>
 
