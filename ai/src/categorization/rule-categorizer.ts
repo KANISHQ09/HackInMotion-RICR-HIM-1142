@@ -13,7 +13,8 @@ export interface CategorizationResult {
   categoryName: string | null;
   confidence: number;
   matchedSignals: string[];
-  method: 'rule';
+  method: 'rule' | 'llm' | 'fallback';
+  reason?: string;
 }
 
 /**

@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "node --watch src/index.ts",
-    "test": "npm run build && node --test dist/types/transaction.test.js dist/normalization/transaction.test.js dist/categorization/rule-categorizer.test.js"
+    "test": "npm run build && node --test dist/types/transaction.test.js dist/normalization/transaction.test.js dist/categorization/rule-categorizer.test.js dist/categorization/llm-categorizer.test.js dist/categorization/hybrid-pipeline.test.js dist/index.test.js"
   },
   "dependencies": {
     "zod": "^3.23.8"
