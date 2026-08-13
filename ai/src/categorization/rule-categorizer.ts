@@ -1,5 +1,5 @@
 import { NormalizedTransaction } from '../types/transaction.js';
-import { EXPENSE_CATEGORIES, getCategoryById } from './categories.js';
+import { getCategoryById } from './categories.js';
 import { MERCHANT_SIGNALS } from './merchant-signals.js';
 import {
   calculateCategoryConfidence,

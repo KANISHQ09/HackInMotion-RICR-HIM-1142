@@ -16,7 +16,6 @@ export interface PropertyBookingCardProps {
   features?: string[]
   amenities?: string[]
   rating?: number
-  onBook?: () => void
   className?: string
 }
 
@@ -32,7 +31,6 @@ export function PropertyBookingCard({
   features = [],
   amenities = [],
   rating,
-  onBook,
   className,
 }: PropertyBookingCardProps) {
   return (
@@ -127,10 +125,7 @@ export function PropertyBookingCard({
               <span className="text-sm font-normal text-slate-500"> Included</span>
             </div>
           </div>
-          <button
-            onClick={onBook}
-            className="rounded-xl bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:bg-foreground/90 text-sm"
-          >
+          <button className="rounded-xl bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:bg-foreground/90 text-sm">
             Explore
           </button>
         </div>

@@ -21,7 +21,7 @@ const services = [
   },
 ]
 
-function AnimatedIcon({ Icon, delay = 0 }: { Icon: any; delay?: number }) {
+function AnimatedIcon({ Icon }: { Icon: any }) {
   const [isVisible, setIsVisible] = useState(false)
   const iconRef = useRef<HTMLDivElement>(null)
 
@@ -154,7 +154,7 @@ export function ServicesSection() {
               className="group p-8 rounded-3xl hover:bg-zinc-50 transition-colors duration-300 text-center"
             >
               <div className="mb-6 flex justify-center">
-                <AnimatedIcon Icon={service.icon} delay={index * 0.2} />
+                <AnimatedIcon Icon={service.icon} />
               </div>
               <h3 className="text-xl font-medium mb-3 text-foreground">{service.title}</h3>
               <p className="text-muted-foreground leading-relaxed text-sm">{service.description}</p>
