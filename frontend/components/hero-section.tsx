@@ -1,10 +1,13 @@
 "use client"
-import { useEffect, useState } from "react"
+
+import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 import { AnimatedText } from "./animated-text"
 
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
+  const frameRef = useRef<HTMLDivElement>(null)
+  const brandRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -14,10 +17,21 @@ export function HeroSection() {
   }, [])
 
   useEffect(() => {
-    let rafId: number
+    const frame = frameRef.current
+    const brand = brandRef.current
+
+    if (!frame || !brand) return
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    if (reduceMotion) return
+
+    let rafId = 0
     let currentProgress = 0
 
-    const handleScroll = () => {
+    const easeOutQuad = (t: number) => t * (2 - t)
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+    const updateStyles = () => {
       const scrollY = window.scrollY
       const maxScroll = 400
       const targetProgress = Math.min(scrollY / maxScroll, 1)
@@ -26,10 +40,27 @@ export function HeroSection() {
         currentProgress += (targetProgress - currentProgress) * 0.1
 
         if (Math.abs(targetProgress - currentProgress) > 0.001) {
-          setScrollProgress(currentProgress)
+          const scale = 1 - easeOutQuad(currentProgress) * 0.15
+          const borderRadius = easeOutCubic(currentProgress) * 48
+          const heightVh = 100 - easeOutQuad(currentProgress) * 37.5
+
+          frame.style.transform = `scale(${scale})`
+          frame.style.borderRadius = `${borderRadius}px`
+          frame.style.height = `${heightVh}vh`
+          brand.style.transform = `translateY(${currentProgress * 150}px)`
+          brand.style.opacity = `${1 - currentProgress * 0.8}`
+
           rafId = requestAnimationFrame(smoothUpdate)
         } else {
-          setScrollProgress(targetProgress)
+          const scale = 1 - easeOutQuad(targetProgress) * 0.15
+          const borderRadius = easeOutCubic(targetProgress) * 48
+          const heightVh = 100 - easeOutQuad(targetProgress) * 37.5
+
+          frame.style.transform = `scale(${scale})`
+          frame.style.borderRadius = `${borderRadius}px`
+          frame.style.height = `${heightVh}vh`
+          brand.style.transform = `translateY(${targetProgress * 150}px)`
+          brand.style.opacity = `${1 - targetProgress * 0.8}`
         }
       }
 
@@ -37,40 +68,40 @@ export function HeroSection() {
       smoothUpdate()
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
+    updateStyles()
+    window.addEventListener("scroll", updateStyles, { passive: true })
     return () => {
-      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("scroll", updateStyles)
       cancelAnimationFrame(rafId)
     }
   }, [])
 
-  const easeOutQuad = (t: number) => t * (2 - t)
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
-
-  const scale = 1 - easeOutQuad(scrollProgress) * 0.15
-  const borderRadius = easeOutCubic(scrollProgress) * 48
-  const heightVh = 100 - easeOutQuad(scrollProgress) * 37.5
-
   return (
-    <section className="pt-32 pb-12 px-6 min-h-screen flex items-center relative overflow-hidden">
+    <section className="pt-32 pb-12 px-6 min-h-[100svh] flex items-center relative overflow-hidden">
       <div className="absolute inset-0 top-0">
         <div
+          ref={frameRef}
           className="w-full will-change-transform overflow-hidden"
           style={{
-            transform: `scale(${scale})`,
-            borderRadius: `${borderRadius}px`,
-            height: `${heightVh}vh`,
+            height: "100vh",
           }}
         >
-          <video autoPlay loop muted playsInline className="w-full h-full object-cover" src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/af7687fd-f2ad-4f2a-96f0-b56fa7d3769c-08wERpo5U1sktxs1vcRsJW9ueslNZv.mp4" />
+          <Image
+            src="/images/7aecbceb-cbd3-4cbd-901c-dd0125d41525.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
         </div>
       </div>
 
       <div
+        ref={brandRef}
         className="absolute bottom-0 left-0 right-0 w-full overflow-hidden pointer-events-none z-[5] flex items-end justify-center"
         style={{
-          transform: `translateY(${scrollProgress * 150}px)`,
-          opacity: 1 - scrollProgress * 0.8,
           height: "100%",
         }}
       >
@@ -100,7 +131,15 @@ export function HeroSection() {
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[400px]"
               }`}
             >
-              <img src="/images/iphone-frame.png" alt="Smart Expense Analyzer Application" className="w-full h-auto relative z-10" />
+              <Image
+                src="/images/iphone-frame.webp"
+                alt="Smart Expense Analyzer application"
+                width={609}
+                height={1243}
+                priority
+                sizes="(min-width: 1024px) 351px, (min-width: 768px) 281px, 234px"
+                className="w-full h-auto relative z-10"
+              />
             </div>
           </div>
         </div>

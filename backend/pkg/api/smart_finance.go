@@ -43,6 +43,7 @@ var SmartFinance = &SmartFinanceApi{
 }
 
 type smartFinanceRegisterRequest struct {
+	Name     string `json:"name" binding:"omitempty,max=64,validNickname"`
 	Email    string `json:"email" binding:"required,max=100,validEmail"`
 	Password string `json:"password" binding:"required,min=6,max=128"`
 }
@@ -55,6 +56,7 @@ type smartFinanceLoginRequest struct {
 type smartFinanceTransactionRequest struct {
 	Date        string `json:"date" binding:"required"`
 	Description string `json:"description" binding:"required,max=255"`
+	Merchant    string `json:"merchant" binding:"omitempty,max=96"`
 	Amount      string `json:"amount" binding:"required"`
 	Type        string `json:"type" binding:"required"`
 	Category    string `json:"category"`
@@ -86,10 +88,21 @@ type smartFinanceGoalRequest struct {
 	TargetDate   string `json:"targetDate" binding:"required"`
 }
 
+type smartFinancePlannedAddOnRequest struct {
+	ExpectedDate string `json:"expectedDate" binding:"required"`
+	Description  string `json:"description" binding:"required,max=255"`
+	Merchant     string `json:"merchant" binding:"omitempty,max=96"`
+	Amount       string `json:"amount" binding:"required"`
+	Type         string `json:"type" binding:"required"`
+	Category     string `json:"category" binding:"omitempty,max=64"`
+	Note         string `json:"note" binding:"omitempty,max=255"`
+}
+
 type smartFinanceTransactionResponse struct {
 	Id          string `json:"id"`
 	Date        string `json:"date"`
 	Description string `json:"description"`
+	Merchant    string `json:"merchant"`
 	Amount      string `json:"amount"`
 	Type        string `json:"type"`
 	Category    string `json:"category"`
@@ -114,6 +127,19 @@ type smartFinanceGoalResponse struct {
 	TargetDate      string `json:"targetDate"`
 	CurrentProgress string `json:"currentProgress"`
 	Progress        string `json:"progress"`
+}
+
+type smartFinancePlannedAddOnResponse struct {
+	Id           string `json:"id"`
+	ExpectedDate string `json:"expectedDate"`
+	Description  string `json:"description"`
+	Merchant     string `json:"merchant"`
+	Amount       string `json:"amount"`
+	Type         string `json:"type"`
+	Category     string `json:"category"`
+	Note         string `json:"note"`
+	Status       string `json:"status"`
+	CreatedAt    int64  `json:"createdAt"`
 }
 
 type smartFinanceImportRowResult struct {
@@ -167,8 +193,12 @@ func (a *SmartFinanceApi) RegisterHandler(c *core.WebContext) (any, *errs.Error)
 	}
 
 	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+	req.Name = strings.TrimSpace(req.Name)
 	username := smartFinanceUsernameFromEmail(req.Email)
 	nickname := strings.Split(req.Email, "@")[0]
+	if req.Name != "" {
+		nickname = req.Name
+	}
 
 	user := &models.User{
 		Username:             username,
@@ -357,18 +387,28 @@ func (a *SmartFinanceApi) ImportTransactionsHandler(c *core.WebContext) (any, *e
 
 	reader := csv.NewReader(opened)
 	reader.TrimLeadingSpace = true
+	reader.FieldsPerRecord = -1
 	rows, err := reader.ReadAll()
 	if err != nil || len(rows) == 0 {
-		return nil, errs.ErrParameterInvalid
+		return &smartFinanceImportSummary{
+			RowsFailed: 1,
+			Results: []*smartFinanceImportRowResult{
+				{Row: 1, Status: "failed", Reason: "CSV could not be parsed. Check quotes, commas, and line breaks."},
+			},
+		}, nil
 	}
 
 	summary := &smartFinanceImportSummary{Results: make([]*smartFinanceImportRowResult, 0)}
 	header := smartFinanceCSVHeaderMap(rows[0])
-	required := []string{"date", "description", "amount", "type"}
-	for _, column := range required {
-		if _, ok := header[column]; !ok {
-			return nil, errs.ErrParameterInvalid
-		}
+	if !smartFinanceCSVHasAny(header, "date", "transactiondate", "transaction_date", "txn_date") ||
+		!smartFinanceCSVHasAny(header, "description", "details", "narration", "particulars", "merchant", "payee") ||
+		!smartFinanceCSVHasAny(header, "amount", "debit", "withdrawal", "credit", "deposit") {
+		return &smartFinanceImportSummary{
+			RowsFailed: 1,
+			Results: []*smartFinanceImportRowResult{
+				{Row: 1, Status: "failed", Reason: "CSV needs date, description, and amount columns. Type is optional and defaults to debit."},
+			},
+		}, nil
 	}
 
 	seen := map[string]bool{}
@@ -387,10 +427,17 @@ func (a *SmartFinanceApi) ImportTransactionsHandler(c *core.WebContext) (any, *e
 		summary.RowsProcessed++
 
 		req := &smartFinanceTransactionRequest{
-			Date:        smartFinanceCSVValue(row, header, "date"),
-			Description: smartFinanceCSVValue(row, header, "description"),
-			Amount:      smartFinanceCSVValue(row, header, "amount"),
-			Type:        smartFinanceCSVValue(row, header, "type"),
+			Date:        smartFinanceCSVValueAny(row, header, "date", "transactiondate", "transaction_date", "txn_date"),
+			Description: smartFinanceCSVValueAny(row, header, "description", "details", "narration", "particulars"),
+			Merchant:    smartFinanceCSVValueAny(row, header, "merchant", "payee", "vendor"),
+			Amount:      smartFinanceCSVImportAmount(row, header),
+			Type:        smartFinanceCSVImportType(row, header),
+		}
+		if req.Description == "" {
+			req.Description = req.Merchant
+		}
+		if req.Merchant == "" {
+			req.Merchant = smartFinanceMerchantFromDescription(req.Description)
 		}
 
 		tx, buildErr := a.buildTransactionFromRequest(c, c.GetCurrentUid(), req, "csv")
@@ -695,14 +742,53 @@ func (a *SmartFinanceApi) ListGoalsHandler(c *core.WebContext) (any, *errs.Error
 	return responses, nil
 }
 
-func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid int64, req *smartFinanceTransactionRequest, source string) (*models.Transaction, error) {
-	transactionDate, err := smartFinanceParseDate(req.Date)
+func (a *SmartFinanceApi) CreatePlannedAddOnHandler(c *core.WebContext) (any, *errs.Error) {
+	var req smartFinancePlannedAddOnRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		return nil, errs.NewIncompleteOrIncorrectSubmissionError(err)
+	}
+
+	addOn, err := a.buildPlannedAddOnFromRequest(c.GetCurrentUid(), &req)
+	if err != nil {
+		return nil, errs.ErrParameterInvalid
+	}
+
+	if _, err := datastore.Container.UserDataStore.Query(c, c.GetCurrentUid()).Insert(addOn); err != nil {
+		return nil, errs.Or(err, errs.ErrOperationFailed)
+	}
+
+	return a.plannedAddOnResponse(addOn), nil
+}
+
+func (a *SmartFinanceApi) ListPlannedAddOnsHandler(c *core.WebContext) (any, *errs.Error) {
+	addOns := make([]*models.PlannedAddOn, 0)
+	err := datastore.Container.UserDataStore.Query(c, c.GetCurrentUid()).
+		Where("uid=? AND deleted=?", c.GetCurrentUid(), false).
+		Asc("expected_date").
+		Desc("created_unix_time").
+		Find(&addOns)
+	if err != nil {
+		return nil, errs.Or(err, errs.ErrOperationFailed)
+	}
+
+	responses := make([]*smartFinancePlannedAddOnResponse, len(addOns))
+	for i, addOn := range addOns {
+		responses[i] = a.plannedAddOnResponse(addOn)
+	}
+
+	return responses, nil
+}
+
+func (a *SmartFinanceApi) buildPlannedAddOnFromRequest(uid int64, req *smartFinancePlannedAddOnRequest) (*models.PlannedAddOn, error) {
+	expectedDate, err := smartFinanceParseDate(req.ExpectedDate)
 	if err != nil {
 		return nil, err
 	}
 
-	if transactionDate.After(time.Now().Add(24 * time.Hour)) {
-		return nil, fmt.Errorf("date cannot be in the future")
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	if expectedDate.Before(today) {
+		return nil, fmt.Errorf("expected date cannot be in the past")
 	}
 
 	amount, err := smartFinanceParseAmount(req.Amount)
@@ -715,9 +801,61 @@ func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid in
 		return nil, err
 	}
 
+	description := strings.TrimSpace(req.Description)
+	if description == "" {
+		return nil, fmt.Errorf("description is required")
+	}
+
+	merchant := strings.TrimSpace(req.Merchant)
 	category := strings.TrimSpace(req.Category)
 	if category == "" {
-		category = smartFinanceCategorize(req.Description, txType)
+		category = smartFinanceCategorize(strings.Join([]string{description, merchant}, " "), txType)
+	}
+
+	return &models.PlannedAddOn{
+		Uid:             uid,
+		ExpectedDate:    expectedDate.Format("2006-01-02"),
+		Description:     description,
+		Merchant:        merchant,
+		Amount:          amount,
+		Type:            string(txType),
+		CategoryName:    category,
+		Note:            strings.TrimSpace(req.Note),
+		Status:          "planned",
+		CreatedUnixTime: now.Unix(),
+		UpdatedUnixTime: now.Unix(),
+	}, nil
+}
+
+func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid int64, req *smartFinanceTransactionRequest, source string) (*models.Transaction, error) {
+	transactionDate, err := smartFinanceParseDate(req.Date)
+	if err != nil {
+		return nil, err
+	}
+
+	amount, err := smartFinanceParseAmount(req.Amount)
+	if err != nil || amount <= 0 {
+		return nil, fmt.Errorf("amount must be greater than zero")
+	}
+
+	txType, err := smartFinanceParseTransactionType(req.Type)
+	if err != nil {
+		return nil, err
+	}
+
+	description := strings.TrimSpace(req.Description)
+	if description == "" {
+		return nil, fmt.Errorf("description is required")
+	}
+
+	merchant := strings.TrimSpace(req.Merchant)
+	if merchant == "" {
+		merchant = smartFinanceMerchantFromDescription(description)
+	}
+
+	category := strings.TrimSpace(req.Category)
+	if category == "" {
+		category = smartFinanceCategorize(strings.TrimSpace(merchant+" "+description), txType)
 	}
 
 	categoryId, err := a.ensureCategory(c, uid, category, txType)
@@ -747,7 +885,7 @@ func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid in
 		TransactionTime:   transactionDate.Unix(),
 		TimezoneUtcOffset: 330,
 		Amount:            storedAmount,
-		Comment:           smartFinanceComment(req.Description, source),
+		Comment:           smartFinanceComment(description, merchant, source),
 		CreatedIp:         c.ClientIP(),
 		CreatedUnixTime:   now,
 		UpdatedUnixTime:   now,
@@ -913,6 +1051,7 @@ func (a *SmartFinanceApi) transactionResponse(c *core.WebContext, tx *models.Tra
 		Id:          utils.Int64ToString(tx.TransactionId),
 		Date:        smartFinanceDateFromUnix(tx.TransactionTime),
 		Description: smartFinanceDescriptionFromComment(tx.Comment),
+		Merchant:    smartFinanceMerchantFromComment(tx.Comment),
 		Amount:      smartFinanceAmountToString(absInt64(tx.Amount)),
 		Type:        txType,
 		Category:    a.categoryName(c, tx.Uid, tx.CategoryId),
@@ -978,6 +1117,21 @@ func (a *SmartFinanceApi) goalResponse(c *core.WebContext, goal *models.SavingsG
 	}
 }
 
+func (a *SmartFinanceApi) plannedAddOnResponse(addOn *models.PlannedAddOn) *smartFinancePlannedAddOnResponse {
+	return &smartFinancePlannedAddOnResponse{
+		Id:           utils.Int64ToString(addOn.PlannedAddOnId),
+		ExpectedDate: addOn.ExpectedDate,
+		Description:  addOn.Description,
+		Merchant:     addOn.Merchant,
+		Amount:       smartFinanceAmountToString(addOn.Amount),
+		Type:         addOn.Type,
+		Category:     addOn.CategoryName,
+		Note:         addOn.Note,
+		Status:       addOn.Status,
+		CreatedAt:    addOn.CreatedUnixTime,
+	}
+}
+
 func (a *SmartFinanceApi) budgetAdherenceScore(c *core.WebContext, uid int64) (float64, error) {
 	budgets := make([]*models.Budget, 0)
 	if err := datastore.Container.UserDataStore.Query(c, uid).Where("uid=? AND deleted=?", uid, false).Find(&budgets); err != nil {
@@ -1021,9 +1175,9 @@ func smartFinanceUsernameFromEmail(email string) string {
 
 func smartFinanceParseTransactionType(value string) (smartFinanceTransactionType, error) {
 	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "debit", "expense":
+	case "", "debit", "expense", "withdrawal", "dr":
 		return smartFinanceDebit, nil
-	case "credit", "income":
+	case "credit", "income", "deposit", "cr":
 		return smartFinanceCredit, nil
 	default:
 		return "", fmt.Errorf("type must be debit or credit")
@@ -1031,12 +1185,16 @@ func smartFinanceParseTransactionType(value string) (smartFinanceTransactionType
 }
 
 func smartFinanceParseAmount(value string) (int64, error) {
-	cleaned := strings.ReplaceAll(strings.TrimSpace(value), ",", "")
+	cleaned := strings.TrimSpace(value)
+	cleaned = strings.TrimPrefix(cleaned, "₹")
+	cleaned = strings.TrimPrefix(cleaned, "INR")
+	cleaned = strings.ReplaceAll(cleaned, ",", "")
+	cleaned = strings.TrimSpace(cleaned)
 	parsed, err := strconv.ParseFloat(cleaned, 64)
 	if err != nil {
 		return 0, err
 	}
-	return int64(math.Round(parsed * 100)), nil
+	return int64(math.Round(math.Abs(parsed) * 100)), nil
 }
 
 func smartFinanceAmountToString(value int64) string {
@@ -1053,12 +1211,35 @@ func smartFinanceFloatToString(value float64) string {
 
 func smartFinanceParseDate(value string) (time.Time, error) {
 	value = strings.TrimSpace(value)
-	layouts := []string{"2006-01-02", "02/01/2006", "01-02-2006", "02-01-2006", "2006/01/02"}
+	layouts := []string{
+		"2006-01-02",
+		"02/01/2006",
+		"2/1/2006",
+		"01-02-2006",
+		"1-2-2006",
+		"02-01-2006",
+		"2006/01/02",
+		"02 Jan 2006",
+		"2 Jan 2006",
+		"02 January 2006",
+		"2 January 2006",
+		"Jan 02 2006",
+		"January 2 2006",
+	}
 	for _, layout := range layouts {
 		if parsed, err := time.ParseInLocation(layout, value, time.Local); err == nil {
 			return parsed, nil
 		}
 	}
+
+	currentYear := time.Now().Year()
+	withoutYearLayouts := []string{"02 Jan", "2 Jan", "02 January", "2 January", "Jan 02", "January 2"}
+	for _, layout := range withoutYearLayouts {
+		if parsed, err := time.ParseInLocation(layout, value, time.Local); err == nil {
+			return time.Date(currentYear, parsed.Month(), parsed.Day(), 0, 0, 0, 0, time.Local), nil
+		}
+	}
+
 	return time.Time{}, fmt.Errorf("date is invalid")
 }
 
@@ -1098,17 +1279,33 @@ func smartFinanceCategoryColor(name string) string {
 	return "9B9B9B"
 }
 
-func smartFinanceComment(description string, source string) string {
+func smartFinanceComment(description string, merchant string, source string) string {
 	description = strings.TrimSpace(description)
+	merchant = strings.TrimSpace(merchant)
 	source = strings.TrimSpace(source)
 	if source == "" {
 		source = "manual"
+	}
+	if merchant != "" {
+		return fmt.Sprintf("%s\nmerchant:%s\nsource:%s", description, merchant, source)
 	}
 	return fmt.Sprintf("%s\nsource:%s", description, source)
 }
 
 func smartFinanceDescriptionFromComment(comment string) string {
-	return strings.TrimSpace(strings.Split(comment, "\nsource:")[0])
+	description := strings.Split(comment, "\nsource:")[0]
+	description = strings.Split(description, "\nmerchant:")[0]
+	return strings.TrimSpace(description)
+}
+
+func smartFinanceMerchantFromComment(comment string) string {
+	parts := strings.Split(comment, "\nmerchant:")
+	if len(parts) < 2 {
+		return smartFinanceMerchantFromDescription(smartFinanceDescriptionFromComment(comment))
+	}
+
+	merchant := strings.Split(parts[1], "\nsource:")[0]
+	return strings.TrimSpace(merchant)
 }
 
 func smartFinanceSourceFromComment(comment string) string {
@@ -1122,17 +1319,80 @@ func smartFinanceSourceFromComment(comment string) string {
 func smartFinanceCSVHeaderMap(row []string) map[string]int {
 	result := map[string]int{}
 	for i, column := range row {
-		result[strings.ToLower(strings.TrimSpace(column))] = i
+		normalized := smartFinanceNormalizeCSVHeader(column)
+		if normalized != "" {
+			result[normalized] = i
+		}
 	}
 	return result
 }
 
 func smartFinanceCSVValue(row []string, header map[string]int, column string) string {
-	idx, ok := header[column]
+	idx, ok := header[smartFinanceNormalizeCSVHeader(column)]
 	if !ok || idx >= len(row) {
 		return ""
 	}
-	return row[idx]
+	return strings.TrimSpace(row[idx])
+}
+
+func smartFinanceCSVValueAny(row []string, header map[string]int, columns ...string) string {
+	for _, column := range columns {
+		if value := smartFinanceCSVValue(row, header, column); value != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func smartFinanceCSVHasAny(header map[string]int, columns ...string) bool {
+	for _, column := range columns {
+		if _, ok := header[smartFinanceNormalizeCSVHeader(column)]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func smartFinanceNormalizeCSVHeader(column string) string {
+	column = strings.ToLower(strings.TrimSpace(column))
+	column = strings.ReplaceAll(column, " ", "")
+	column = strings.ReplaceAll(column, "_", "")
+	column = strings.ReplaceAll(column, "-", "")
+	return column
+}
+
+func smartFinanceCSVImportAmount(row []string, header map[string]int) string {
+	if amount := smartFinanceCSVValueAny(row, header, "amount", "transactionamount", "value"); amount != "" {
+		return amount
+	}
+	if debit := smartFinanceCSVValueAny(row, header, "debit", "withdrawal", "withdrawals"); debit != "" {
+		return debit
+	}
+	return smartFinanceCSVValueAny(row, header, "credit", "deposit", "deposits")
+}
+
+func smartFinanceCSVImportType(row []string, header map[string]int) string {
+	if txType := smartFinanceCSVValueAny(row, header, "type", "transactiontype"); txType != "" {
+		return txType
+	}
+	if smartFinanceCSVValueAny(row, header, "credit", "deposit", "deposits") != "" {
+		return "credit"
+	}
+	return "debit"
+}
+
+func smartFinanceMerchantFromDescription(description string) string {
+	fields := strings.Fields(description)
+	if len(fields) == 0 {
+		return ""
+	}
+
+	merchant := fields[0]
+	merchant = strings.Trim(merchant, "-:|")
+	if len(merchant) > 96 {
+		return merchant[:96]
+	}
+	return merchant
 }
 
 func smartFinanceDuplicateKey(tx *smartFinanceTransactionResponse) string {

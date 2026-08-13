@@ -1,6 +1,3 @@
-"use client"
-
-import { useRef, useEffect, useState } from "react"
 import { PropertyBookingCard } from "./property-booking-card"
 
 const properties = [
@@ -9,7 +6,7 @@ const properties = [
     location: "AI & Rule-Based",
     duration: "Instant Parsing",
     availableDate: "7 Categories Built-in",
-    image: "/images/property-beach-villa.jpg",
+    image: "/images/property-beach-villa.webp",
     pricePerNight: 0,
     propertyType: "Core Engine",
     features: ["Food, Rent & Shopping", "Subscriptions & Travel", "Bills & Entertainment", "Zero Manual Tagging"],
@@ -21,7 +18,7 @@ const properties = [
     location: "Personalized Score & Rating",
     duration: "Real-time Metrics",
     availableDate: "Monthly Health Reports",
-    image: "/images/property-mountain-cabin.jpg",
+    image: "/images/property-mountain-cabin.webp",
     pricePerNight: 0,
     propertyType: "Analytics & Guidance",
     features: ["Spending vs Income", "Savings Rate Metric", "Budget Adherence", "Actionable Guidance"],
@@ -33,7 +30,7 @@ const properties = [
     location: "Automated Detection",
     duration: "24/7 Monitoring",
     availableDate: "Bill Reminders Built-in",
-    image: "/images/property-city-loft.jpg",
+    image: "/images/property-city-loft.webp",
     pricePerNight: 0,
     propertyType: "Smart Detector",
     features: ["Flag Unused Subs", "Forgotten Payments", "Upcoming Bill Alerts", "Recurring Tracker"],
@@ -45,7 +42,7 @@ const properties = [
     location: "Natural Language Chat",
     duration: "Instant Answers",
     availableDate: "Always Available",
-    image: "/images/property-tuscan-estate.jpg",
+    image: "/images/property-tuscan-estate.webp",
     pricePerNight: 0,
     propertyType: "AI Assistant",
     features: ["Ask Natural Questions", "Spending Summaries", "Pattern Diagnostics", "Custom Recommendations"],
@@ -57,7 +54,7 @@ const properties = [
     location: "Category & Target Budgets",
     duration: "Monthly Tracking",
     availableDate: "Progress Dashboard",
-    image: "/images/property-tropical-bungalow.jpg",
+    image: "/images/property-tropical-bungalow.webp",
     pricePerNight: 0,
     propertyType: "Budget Management",
     features: ["Monthly Limits", "Savings Targets", "Visual Progress Bars", "Spike Detection"],
@@ -69,7 +66,7 @@ const properties = [
     location: "What-If Scenarios",
     duration: "Interactive Projections",
     availableDate: "Peer Comparison",
-    image: "/images/property-lakefront-modern.jpg",
+    image: "/images/property-lakefront-modern.webp",
     pricePerNight: 0,
     propertyType: "Advanced Analytics",
     features: ["What-If Scenarios", "Cut Expense Impact", "Peer Comparisons", "Anonymized Benchmarks"],
@@ -79,44 +76,7 @@ const properties = [
 ]
 
 export function PricingSection() {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [isHovered, setIsHovered] = useState(false)
-  const positionRef = useRef(0)
-  const animationRef = useRef<number | undefined>(undefined)
-
   const duplicatedProperties = [...properties, ...properties, ...properties]
-
-  useEffect(() => {
-    const scrollContainer = scrollRef.current
-    if (!scrollContainer) return
-
-    const speed = isHovered ? 0.3 : 1 // Slow down on hover instead of changing animation duration
-    let lastTime = performance.now()
-
-    const animate = (currentTime: number) => {
-      const deltaTime = currentTime - lastTime
-      lastTime = currentTime
-
-      positionRef.current += speed * (deltaTime / 16)
-
-      const totalWidth = scrollContainer.scrollWidth / 3
-
-      if (positionRef.current >= totalWidth) {
-        positionRef.current = 0
-      }
-
-      scrollContainer.style.transform = `translateX(-${positionRef.current}px)`
-      animationRef.current = requestAnimationFrame(animate)
-    }
-
-    animationRef.current = requestAnimationFrame(animate)
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [isHovered])
 
   return (
     <section id="pricing" className="py-32 overflow-hidden">
@@ -127,10 +87,10 @@ export function PricingSection() {
         </p>
       </div>
 
-      <div className="relative w-full" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-        <div ref={scrollRef} className="flex gap-6" style={{ width: "fit-content" }}>
+      <div className="relative w-full overflow-hidden">
+        <div className="flex w-max gap-6 animate-feature-marquee hover:[animation-play-state:paused]">
           {duplicatedProperties.map((property, index) => (
-            <div key={index} className="flex-shrink-0 w-[85vw] sm:w-[60vw] lg:w-[400px]">
+            <div key={`${property.propertyName}-${index}`} className="flex-shrink-0 w-[85vw] sm:w-[60vw] lg:w-[400px]">
               <PropertyBookingCard {...property} />
             </div>
           ))}
