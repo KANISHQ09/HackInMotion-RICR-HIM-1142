@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 	"reflect"
@@ -68,90 +67,11 @@ func PrintJsonErrorResult(c *core.WebContext, err *errs.Error) {
 	c.AbortWithStatusJSON(err.HttpStatusCode, result)
 }
 
-// PrintJSONRPCSuccessResult writes success response in JSON-RPC format to current http context
-func PrintJSONRPCSuccessResult(c *core.WebContext, jsonRPCRequest *core.JSONRPCRequest, result any) {
-	c.JSON(http.StatusOK, core.NewJSONRPCResponse(jsonRPCRequest.ID, result))
-}
-
-// PrintJSONRPCErrorResult writes error response in JSON-RPC format to current http context
-func PrintJSONRPCErrorResult(c *core.WebContext, jsonRPCRequest *core.JSONRPCRequest, err *errs.Error) {
-	c.SetResponseError(err)
-
-	var id any
-
-	if jsonRPCRequest != nil {
-		id = jsonRPCRequest.ID
-	}
-
-	jsonRPCError := core.JSONRPCInternalError
-
-	if err.Code() == errs.ErrIncompleteOrIncorrectSubmission.Code() {
-		jsonRPCError = core.JSONRPCParseError
-	} else if err.Code() == errs.ErrApiNotFound.Code() {
-		jsonRPCError = core.JSONRPCMethodNotFoundError
-	} else if err.Code() == errs.ErrParameterInvalid.Code() {
-		jsonRPCError = core.JSONRPCInvalidParamsError
-	}
-
-	c.AbortWithStatusJSON(err.HttpStatusCode, core.NewJSONRPCErrorResponseWithCause(id, jsonRPCError, GetDisplayErrorMessage(err)))
-}
-
 // PrintDataErrorResult writes error response in custom content type to current http context
 func PrintDataErrorResult(c *core.WebContext, contentType string, err *errs.Error) {
 	c.SetResponseError(err)
 	c.Data(err.HttpStatusCode, contentType, []byte(GetDisplayErrorMessage(err)))
 	c.Abort()
-}
-
-// SetEventStreamHeader sets the headers for event stream response
-func SetEventStreamHeader(c *core.WebContext) {
-	c.Writer.Header().Set("Content-Type", "text/event-stream")
-	c.Writer.Header().Set("Cache-Control", "no-cache")
-	c.Writer.Header().Set("Connection", "keep-alive")
-}
-
-func WriteEventStreamJsonSuccessResult(c *core.WebContext, result any) {
-	data, err := json.Marshal(result)
-
-	if err != nil {
-		c.Abort()
-		return
-	}
-
-	_, err = c.Writer.WriteString("data: " + string(data) + "\n\n")
-
-	if err != nil {
-		c.Abort()
-		return
-	}
-
-	c.Writer.Flush()
-}
-
-func WriteEventStreamJsonErrorResult(c *core.WebContext, originalErr *errs.Error) {
-	c.SetResponseError(originalErr)
-
-	result := GetJsonErrorResult(originalErr, c.Request.URL.Path)
-
-	if originalErr.Context != nil {
-		result["context"] = originalErr.Context
-	}
-
-	data, err := json.Marshal(result)
-
-	if err != nil {
-		c.Abort()
-		return
-	}
-
-	_, err = c.Writer.WriteString("data: " + string(data) + "\n\n")
-
-	if err != nil {
-		c.Abort()
-		return
-	}
-
-	c.Writer.Flush()
 }
 
 func getValidationErrorText(err validator.FieldError) string {

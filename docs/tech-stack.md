@@ -1,244 +1,235 @@
-
----
-
-# `docs/tech-stack.md`
-
-```md
 # Technology Stack
 
-## 1. Frontend
+This file describes the technologies actually used in the Spendly repository.
 
-### Next.js
+## Frontend
 
-Purpose:
+Location: `frontend/`
 
-- React application framework
-- Routing
-- Application structure
-- Production-ready frontend
+Core technologies:
 
-### TypeScript
+- Next.js 16.
+- React 19.
+- TypeScript.
+- Tailwind CSS v4.
+- shadcn/ui style component primitives.
+- Radix UI.
+- lucide-react icons.
+- Recharts.
+- Framer Motion.
+- next-themes.
+- Vercel Analytics.
 
-Purpose:
+Supporting libraries:
 
-- Type safety
-- Maintainability
-- Safer API contracts
-- Better developer experience
+- `class-variance-authority` for component variants.
+- `clsx` and `tailwind-merge` for class composition.
+- `react-hook-form` and `zod` for future form validation.
+- `date-fns` for date utilities.
+- `sonner` and shadcn toast utilities for notifications.
 
-### Tailwind CSS
+Frontend rules:
 
-Purpose:
+- Use the Next.js App Router.
+- Use semantic CSS variables from `frontend/app/globals.css`.
+- Use existing components in `frontend/components/ui`.
+- Use Spendly naming in user-facing text and docs.
+- Follow `docs/design.md` for page design.
 
-- Responsive styling
-- Consistent design
-- Rapid UI development
+## Backend
 
----
+Location: `backend/`
 
-## 2. Backend
+Core technologies:
 
-### Node.js
+- Go 1.26 module.
+- Gin web framework.
+- Xorm ORM.
+- go-playground validator.
+- JWT authentication.
+- INI configuration via `gopkg.in/ini.v1`.
+- Logrus logging.
+- gocron for scheduled jobs.
 
-Purpose:
+Database support:
 
-- Server-side JavaScript runtime
-- Asynchronous API handling
+- SQLite via `github.com/mattn/go-sqlite3`.
+- MySQL via `github.com/go-sql-driver/mysql`.
+- PostgreSQL via `github.com/lib/pq`.
 
-### Express.js
+Current local configuration:
 
-Purpose:
+- Database type: `sqlite3`.
+- Database path: `backend/data/spendly.db`.
+- Backend HTTP port: `8080`.
+- Config file: `backend/conf/spendly.ini`.
 
-- REST APIs
-- Routing
-- Middleware
-- Request/response handling
+Backend rules:
 
----
+- Protected routes must use JWT authorization.
+- Financial records must be scoped by user ID.
+- Keep API handlers focused and move reusable business logic into services/helpers.
+- Use existing validators and model conventions.
+- Keep API docs aligned with `backend/cmd/webserver.go`.
 
-## 3. Database
+## AI Service
 
-### MongoDB
+Location: `ai/`
 
-Purpose:
+Core technologies:
 
-Store:
+- Node.js.
+- TypeScript.
+- Zod.
+- Node test runner.
 
-- Users
-- Transactions
-- Categories
-- Budgets
-- Savings goals
-- Historical analysis where required
+Current responsibilities:
 
----
+- Transaction type contract.
+- Transaction normalization.
+- Rule-based categorization.
+- Categorization tests.
 
-## 4. Authentication
+Future responsibilities:
 
-Authentication is responsible for:
+- LLM fallback for ambiguous transactions.
+- AI-generated insights.
+- Natural language financial assistant.
+- Deeper spending anomaly analysis.
 
-- Registration
-- Login
-- Protected resources
-- User identity
-- Authorization
+AI service rules:
 
-Implementation details must ensure that users can access only their own financial data.
+- Keep contracts explicit.
+- Do not couple the AI service directly to backend database internals.
+- Prefer deterministic categorization before costly LLM calls.
+- Every AI-generated result must be explainable enough for financial use.
 
----
+## Storage
 
-## 5. Validation
+Current backend storage options:
 
-### Joi
+- Local filesystem by default.
+- MinIO support.
+- WebDAV support.
 
-Use Joi for:
+Use local filesystem storage for local development unless a feature needs object storage behavior.
 
-- Request validation
-- Authentication validation
-- Transaction validation
-- Budget validation
-- Savings goal validation
-- Query validation
+## Authentication
 
----
+Current backend auth uses token-based authentication.
 
-## 6. CSV Processing
+Responsibilities:
+
+- Registration.
+- Login.
+- Current user lookup.
+- Protected API access.
+- User ownership enforcement.
+
+Required frontend work:
+
+- Login page.
+- Register page.
+- Token storage strategy.
+- Authenticated API client.
+- Protected dashboard routes.
+
+## Validation
+
+Validation exists at multiple layers:
+
+- Frontend form validation should use React Hook Form and Zod where useful.
+- Backend request binding and validation use Gin and go-playground validator.
+- AI service runtime contracts use Zod.
+- CSV import validates file size, extension, headers, rows, dates, amounts, and duplicates.
+
+## CSV Processing
 
 CSV is the required bulk transaction-import format.
 
-Processing pipeline:
+Pipeline:
 
-CSV
-↓
-File Validation
-↓
-CSV Parsing
-↓
-Row Validation
-↓
-Data Normalization
-↓
-Duplicate Detection
-↓
-Categorization
-↓
-Database
+```text
+CSV file
+-> File validation
+-> Header validation
+-> Row parsing
+-> Date normalization
+-> Amount normalization
+-> Duplicate detection
+-> Categorization
+-> Database insert
+-> Import summary
+```
 
----
+Required CSV headers:
 
-## 7. Categorization Engine
+- `date`
+- `description`
+- `amount`
+- `type`
 
-Automatic categorization is a core technical component.
+## Charts
 
-Possible approaches:
+Current charting library:
 
-1. Rule-based classification
-2. Machine learning
-3. AI/NLP API
+- Recharts.
 
-The final approach must be selected based on:
+Use charts for:
 
-- Accuracy
-- Reliability
-- Development time
-- Explainability
-- Cost
-- Maintainability
+- Spending breakdown.
+- Monthly spending trends.
+- Budget progress.
+- Financial health signals.
+- Category comparisons.
 
-The selected approach must be documented with its reasoning.
+Charts must communicate useful financial information and should not exist only for decoration.
 
----
+## Security
 
-## 8. Charts
+Spendly handles sensitive financial data.
 
-Use a suitable charting library for:
+Security requirements:
 
-- Spending breakdown
-- Monthly spending trends
-- Budget progress
-- Financial data visualization
+- Authenticate protected requests.
+- Authorize access by user ownership.
+- Validate all external input.
+- Keep secrets out of source code.
+- Use `.env.example` to document required variables.
+- Avoid logging sensitive user data.
+- Return safe error messages.
+- Keep CORS and production headers intentional.
 
-Charts must communicate useful information and should not exist only for decoration.
+## Environment Variables
 
----
+Use `.env` for local secrets and never commit real secret values.
 
-## 9. Security
+Use `.env.example` to document required variables.
 
-The application should use appropriate security practices for:
+Backend configuration currently also uses:
 
-- Authentication
-- Authorization
-- Input validation
-- CORS
-- HTTP security headers
-- Environment variables
-- Safe error handling
+- `backend/conf/spendly.ini`.
 
----
+## Dependency Rule
 
-## 10. Environment Variables
+Do not add a dependency simply because it is popular.
 
-Secrets must never be hardcoded.
+Before adding a dependency, answer:
 
-Use:
+- What problem does it solve?
+- Is it already solved by the current stack?
+- Does it increase security or maintenance risk?
+- Can every contributor understand it?
 
-.env
+Prefer simple, understandable solutions for the MVP.
 
-for local secrets.
-
-Use:
-
-.env.example
-
-for documenting required variables.
-
-Never commit the actual `.env` file.
-
----
-
-## 11. Dependency Rule
-
-Do not add a library simply because it is popular.
-
-Every significant dependency must have a clear purpose.
-
-Before adding a dependency ask:
-
-> What problem does this dependency solve?
-
-Prefer simple, understandable solutions when a dependency is not necessary.
-
----
-
-## 12. AI Usage
-
-AI development tools are permitted by HackInMotion.
-
-AI may be used for:
-
-- Boilerplate
-- Debugging
-- Documentation
-- Testing assistance
-- Code explanation
-- Implementation suggestions
-- Research
-
-AI-generated code must be reviewed and understood by the team.
-
-Every participant must be able to explain the code they contribute.
-
-AI must enhance productivity, not replace engineering understanding.
-
----
-
-## 13. Technology Decision Rule
+## Technology Decision Rule
 
 When choosing between technologies:
 
-1. Prefer reliability
-2. Prefer simplicity
-3. Prefer explainability
-4. Prefer maintainability
-5. Prefer hackathon feasibility
-6. Avoid unnecessary complexity
+1. Prefer reliability.
+2. Prefer simplicity.
+3. Prefer explainability.
+4. Prefer maintainability.
+5. Prefer demo feasibility.
+6. Avoid unnecessary complexity.

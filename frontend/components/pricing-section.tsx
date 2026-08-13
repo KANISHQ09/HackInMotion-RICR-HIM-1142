@@ -131,7 +131,7 @@ export function PricingSection() {
         <div ref={scrollRef} className="flex gap-6" style={{ width: "fit-content" }}>
           {duplicatedProperties.map((property, index) => (
             <div key={index} className="flex-shrink-0 w-[85vw] sm:w-[60vw] lg:w-[400px]">
-              <PropertyBookingCard {...property} onBook={() => console.log(`Booking ${property.propertyName}`)} />
+              <PropertyBookingCard {...property} />
             </div>
           ))}
         </div>

@@ -2,16 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/urfave/cli/v3"
 
 	clis "github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/cli"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
-	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/errs"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/models"
-	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 )
 
 // UserData represents the data command
@@ -336,56 +333,6 @@ var UserData = &cli.Command{
 					Aliases:  []string{"n"},
 					Required: true,
 					Usage:    "Specific user name",
-				},
-			},
-		},
-		{
-			Name:   "transaction-import",
-			Usage:  "Import transactions to specified user",
-			Action: bindAction(importUserTransaction),
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:     "username",
-					Aliases:  []string{"n"},
-					Required: true,
-					Usage:    "Specific user name",
-				},
-				&cli.StringFlag{
-					Name:     "file",
-					Aliases:  []string{"f"},
-					Required: true,
-					Usage:    "Specific import file path (e.g. transaction.csv)",
-				},
-				&cli.StringFlag{
-					Name:     "type",
-					Aliases:  []string{"t"},
-					Required: true,
-					Usage:    "Import file type (supports \"spendly_csv\", \"spendly_tsv\")",
-				},
-			},
-		},
-		{
-			Name:   "transaction-export",
-			Usage:  "Export user all transactions to file",
-			Action: bindAction(exportUserTransaction),
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:     "username",
-					Aliases:  []string{"n"},
-					Required: true,
-					Usage:    "Specific user name",
-				},
-				&cli.StringFlag{
-					Name:     "file",
-					Aliases:  []string{"f"},
-					Required: true,
-					Usage:    "Specific exported file path (e.g. transaction.csv)",
-				},
-				&cli.StringFlag{
-					Name:     "type",
-					Aliases:  []string{"t"},
-					Required: false,
-					Usage:    "Export file type, support csv or tsv, default is csv",
 				},
 			},
 		},
@@ -839,108 +786,6 @@ func fixTransactionTagIndexNotHaveTransactionTime(c *core.CliContext) error {
 	}
 
 	log.CliInfof(c, "[user_data.fixTransactionTagIndexNotHaveTransactionTime] user transaction tag index data has been fixed successfully")
-
-	return nil
-}
-
-func exportUserTransaction(c *core.CliContext) error {
-	_, err := initializeSystem(c)
-
-	if err != nil {
-		return err
-	}
-
-	username := c.String("username")
-	filePath := c.String("file")
-	fileType := c.String("type")
-
-	if fileType == "" {
-		fileType = "csv"
-	}
-
-	if fileType != "csv" && fileType != "tsv" {
-		log.CliErrorf(c, "[user_data.exportUserTransaction] export file type is not supported")
-		return errs.ErrNotSupported
-	}
-
-	if filePath == "" {
-		log.CliErrorf(c, "[user_data.exportUserTransaction] export file path is unspecified")
-		return os.ErrNotExist
-	}
-
-	fileExists, err := utils.IsExists(filePath)
-
-	if fileExists {
-		log.CliErrorf(c, "[user_data.exportUserTransaction] specified file path already exists")
-		return os.ErrExist
-	}
-
-	log.CliInfof(c, "[user_data.exportUserTransaction] starting exporting user \"%s\" data", username)
-
-	content, err := clis.UserData.ExportTransaction(c, username, fileType)
-
-	if err != nil {
-		log.CliErrorf(c, "[user_data.exportUserTransaction] error occurs when exporting user data")
-		return err
-	}
-
-	err = utils.WriteFile(filePath, content)
-
-	if err != nil {
-		log.CliErrorf(c, "[user_data.exportUserTransaction] failed to write to %s", filePath)
-		return err
-	}
-
-	log.CliInfof(c, "[user_data.exportUserTransaction] user transactions have been exported to %s", filePath)
-
-	return nil
-}
-
-func importUserTransaction(c *core.CliContext) error {
-	_, err := initializeSystem(c)
-
-	if err != nil {
-		return err
-	}
-
-	username := c.String("username")
-	filePath := c.String("file")
-	filetype := c.String("type")
-
-	if filePath == "" {
-		log.CliErrorf(c, "[user_data.importUserTransaction] import file path is not specified")
-		return os.ErrNotExist
-	}
-
-	fileExists, err := utils.IsExists(filePath)
-
-	if !fileExists {
-		log.CliErrorf(c, "[user_data.importUserTransaction] import file does not exist")
-		return os.ErrExist
-	}
-
-	if filetype != "spendly_csv" && filetype != "spendly_tsv" {
-		log.CliErrorf(c, "[user_data.importUserTransaction] unknown file type \"%s\"", filetype)
-		return errs.ErrImportFileTypeNotSupported
-	}
-
-	data, err := os.ReadFile(filePath)
-
-	if err != nil {
-		log.CliErrorf(c, "[user_data.importUserTransaction] failed to load import file")
-		return err
-	}
-
-	log.CliInfof(c, "[user_data.importUserTransaction] start importing transactions to user \"%s\"", username)
-
-	err = clis.UserData.ImportTransaction(c, username, filetype, data)
-
-	if err != nil {
-		log.CliErrorf(c, "[user_data.importUserTransaction] error occurs when importing user data")
-		return err
-	}
-
-	log.CliInfof(c, "[user_data.importUserTransaction] transactions have been imported to user \"%s\"", username)
 
 	return nil
 }

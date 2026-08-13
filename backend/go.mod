@@ -3,7 +3,6 @@ module github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142
 go 1.26.0
 
 require (
-	github.com/boombuler/barcode v1.1.0
 	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/extrame/xls v0.0.2-0.20200426124601-4a6cf263071b
 	github.com/gin-contrib/cache v1.4.4
@@ -37,6 +36,7 @@ require (
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
+	github.com/boombuler/barcode v1.1.0 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20260422231931-4d751bb6e37c // indirect
 	github.com/buger/jsonparser v1.6.1 // indirect
 	github.com/bytedance/gopkg v0.1.4 // indirect

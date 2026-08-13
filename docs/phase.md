@@ -1,283 +1,274 @@
-
----
-
-# `docs/phase.md`
-
-```md
 # Development Phases
 
-## Phase 0 — Foundation
+This roadmap reflects the current Spendly repository. Checkboxes describe product progress, not only file existence.
+
+## Phase 0 - Foundation
+
+Status: Mostly complete.
+
+- [x] Repository structure exists.
+- [x] Frontend app initialized.
+- [x] Backend app initialized.
+- [x] AI service initialized.
+- [x] Documentation folder exists.
+- [x] Environment example exists.
+- [x] Backend configuration exists.
+- [x] Base UI system exists.
+- [ ] Finalize local developer setup instructions.
 
-Status: Not Started
+Completion criteria:
 
-### Tasks
+Frontend, backend, and AI service can be installed, built, and run independently by a new contributor.
 
-- [ ] Initialize frontend
-- [ ] Initialize backend
-- [ ] Configure Git
-- [ ] Configure environment variables
-- [ ] Configure database
-- [ ] Establish project structure
-- [ ] Establish API conventions
-- [ ] Establish base UI system
+## Phase 1 - Authentication
+
+Status: Backend partial, frontend pending.
+
+- [x] Registration API.
+- [x] Login API.
+- [x] Current user API.
+- [x] Token creation.
+- [x] Protected API middleware.
+- [ ] Login page.
+- [ ] Register page.
+- [ ] Frontend auth state.
+- [ ] Logout flow.
+- [ ] Auth error handling.
+- [ ] Protected frontend routes.
 
-### Completion Criteria
+Completion criteria:
 
-Frontend and backend run independently and communicate correctly.
+A user can register, log in, stay authenticated in the frontend, and access only their own protected resources.
 
----
+## Phase 2 - Transaction Management
+
+Status: Backend partial, frontend pending.
+
+- [x] Transaction create API.
+- [x] Transaction list API.
+- [x] Transaction update API.
+- [x] Transaction delete API.
+- [x] Transaction validation.
+- [x] User-scoped transaction access.
+- [ ] Transaction list UI.
+- [ ] Transaction form UI.
+- [ ] Transaction filters.
+- [ ] Transaction edit/delete interactions.
+- [ ] Empty/loading/error states.
 
-# Phase 1 — Authentication
+Completion criteria:
 
-### Tasks
+A user can fully manage transactions from the UI.
 
-- [ ] User model
-- [ ] Registration
-- [ ] Login
-- [ ] Authentication middleware
-- [ ] Protected routes
-- [ ] Authorization
-- [ ] Frontend authentication state
-- [ ] Authentication error handling
+## Phase 3 - CSV Import
 
-### Completion Criteria
+Status: Backend partial, frontend pending.
 
-A user can register, log in, and access only their own protected resources.
+- [x] CSV import API.
+- [x] File extension and size validation.
+- [x] Required header validation.
+- [x] Row parsing.
+- [x] Date normalization.
+- [x] Amount normalization.
+- [x] Duplicate detection.
+- [x] Import summary response.
+- [ ] CSV upload UI.
+- [ ] Import preview UI.
+- [ ] Import error reporting UI.
+- [ ] Sample CSV documentation.
 
----
+Completion criteria:
 
-# Phase 2 — Transaction Management
+A realistic CSV bank statement can be imported safely from the frontend, with clear success and error reporting.
 
-### Tasks
+## Phase 4 - Categorization
 
-- [ ] Transaction model
-- [ ] Manual transaction form
-- [ ] Create transaction API
-- [ ] List transactions
-- [ ] View transaction
-- [ ] Update transaction
-- [ ] Delete transaction
-- [ ] Transaction validation
+Status: Initial implementation exists.
 
-### Completion Criteria
+- [x] Backend rule-based categorization.
+- [x] AI service rule-based categorization.
+- [x] Basic financial categories.
+- [ ] Align backend and AI category taxonomy.
+- [ ] Add category confidence where needed.
+- [ ] Handle unknown/ambiguous merchants consistently.
+- [ ] Add category management UI if required.
+- [ ] Expand test coverage for common Indian transaction merchants.
 
-A user can fully manage their transactions manually.
+Core categories:
 
----
+- Food.
+- Transport.
+- Bills and utilities.
+- Shopping.
+- Entertainment.
+- Health.
+- Rent.
+- Salary and income.
+- Subscriptions.
+- Other.
 
-# Phase 3 — CSV Import
+Completion criteria:
 
-### Tasks
+Transactions receive useful, explainable categories, and unknown cases are handled gracefully.
 
-- [ ] CSV upload UI
-- [ ] File validation
-- [ ] CSV parsing
-- [ ] Row validation
-- [ ] Date normalization
-- [ ] Amount normalization
-- [ ] Missing-field handling
-- [ ] Duplicate detection
-- [ ] Import summary
-- [ ] Import error reporting
+## Phase 5 - Spending Analytics
 
-### Completion Criteria
+Status: Backend partial, dashboard UI pending.
 
-A realistic CSV bank-statement export can be imported safely.
+- [x] Income calculation.
+- [x] Expense calculation.
+- [x] Net savings calculation.
+- [x] Category breakdown.
+- [x] Monthly trends.
+- [x] Recurring transaction detection.
+- [x] Basic anomaly detection.
+- [ ] Analytics dashboard cards.
+- [ ] Date range filters.
+- [ ] Chart interactions.
+- [ ] Empty state for no transactions.
 
----
+Completion criteria:
 
-# Phase 4 — Categorization
+The user can understand where money is going from the dashboard.
 
-### Tasks
+## Phase 6 - Financial Health
 
-- [ ] Define categories
-- [ ] Select categorization approach
-- [ ] Implement categorization engine
-- [ ] Categorize existing transactions
-- [ ] Handle unknown merchants
-- [ ] Test categorization
+Status: Backend partial, product refinement pending.
 
-### Core Categories
+- [x] Health score endpoint.
+- [x] Savings-rate signal.
+- [x] Budget-adherence signal.
+- [x] Volatility signal.
+- [x] Plain-language score insights.
+- [ ] Final scoring methodology documentation.
+- [ ] Dashboard health score card.
+- [ ] Explanation UI for score factors.
+- [ ] Tests for score edge cases.
 
-- Food
-- Rent
-- Shopping
-- Subscriptions
-- Travel
-- Bills
-- Entertainment
+Completion criteria:
 
-### Completion Criteria
+The user receives a clear, explainable financial health score with actionable context.
 
-Imported transactions are automatically assigned meaningful categories.
+## Phase 7 - Budgets And Savings Goals
 
----
+Status: Backend partial, frontend pending.
 
-# Phase 5 — Spending Analytics
+Budgets:
 
-### Tasks
+- [x] Create budget API.
+- [x] List budget API.
+- [x] Budget progress calculation.
+- [ ] Update budget API.
+- [ ] Delete budget API.
+- [ ] Budget UI.
+- [ ] Overspending warning UI.
 
-- [ ] Calculate income
-- [ ] Calculate expenses
-- [ ] Calculate savings
-- [ ] Category aggregation
-- [ ] Monthly spending
-- [ ] Month-over-month comparison
-- [ ] Recurring transaction detection
-- [ ] Unusual spending detection
+Savings goals:
 
-### Completion Criteria
+- [x] Create goal API.
+- [x] List goal API.
+- [x] Goal progress response.
+- [ ] Update goal API.
+- [ ] Delete goal API.
+- [ ] Savings goal UI.
 
-The system can explain where the user's money is going.
+Completion criteria:
 
----
+Users can set targets and understand progress against budgets and savings goals.
 
-# Phase 6 — Financial Health
+## Phase 8 - Insights And Recommendations
 
-### Tasks
+Status: Backend initial implementation exists.
 
-- [ ] Define scoring methodology
-- [ ] Implement score calculation
-- [ ] Savings-rate calculation
-- [ ] Spending-versus-income analysis
-- [ ] Budget adherence calculation
-- [ ] Financial summary
+- [x] Recommendation endpoint.
+- [x] Recommendation from expense-to-income ratio.
+- [x] Recommendation from top category.
+- [ ] Insight cards in dashboard.
+- [ ] Prioritized recommendation severity.
+- [ ] Dismiss/save insight behavior.
+- [ ] More insight rules based on real user data.
 
-### Completion Criteria
+Completion criteria:
 
-The user receives a clear and explainable financial health score.
+The application explains meaningful financial patterns and suggests practical next actions.
 
----
+## Phase 9 - Dashboard
 
-# Phase 7 — Budgets & Savings Goals
+Status: Pending.
 
-## Budgets
+- [ ] Dashboard route.
+- [ ] Dashboard app shell.
+- [ ] Financial health card.
+- [ ] Income card.
+- [ ] Expense card.
+- [ ] Savings card.
+- [ ] Spending breakdown chart.
+- [ ] Spending trend chart.
+- [ ] Budget progress widgets.
+- [ ] Savings goal widgets.
+- [ ] Insight/recommendation panel.
+- [ ] Recent transactions table.
+- [ ] Responsive layout.
 
-- [ ] Create budget
-- [ ] Update budget
-- [ ] Delete budget
-- [ ] Track budget usage
-- [ ] Detect overspending
-
-## Savings Goals
-
-- [ ] Create goal
-- [ ] Update goal
-- [ ] Track progress
-- [ ] Display target versus current savings
-
-### Completion Criteria
-
-Users can set targets and understand their progress.
-
----
-
-# Phase 8 — Insights & Recommendations
-
-### Tasks
-
-- [ ] Define insight rules
-- [ ] Spending insights
-- [ ] Trend insights
-- [ ] Budget insights
-- [ ] Savings insights
-- [ ] Actionable recommendations
-
-### Rule
-
-Every insight must be derived from actual user data.
-
-### Completion Criteria
-
-The application can explain meaningful financial patterns and suggest actions.
-
----
-
-# Phase 9 — Dashboard
-
-### Tasks
-
-- [ ] Dashboard layout
-- [ ] Financial health card
-- [ ] Income card
-- [ ] Expense card
-- [ ] Savings card
-- [ ] Spending breakdown
-- [ ] Spending trends
-- [ ] Budget progress
-- [ ] Savings goals
-- [ ] Insights
-- [ ] Recent transactions
-- [ ] Responsive design
-
-### Completion Criteria
+Completion criteria:
 
 A user can understand their financial situation within seconds.
 
----
+## Phase 10 - Quality And Security
 
-# Phase 10 — Quality & Security
+Status: Ongoing.
 
-### Tasks
+- [ ] Authentication review.
+- [ ] Authorization review.
+- [ ] User ownership review.
+- [ ] Input validation review.
+- [ ] CSV security review.
+- [ ] Error handling review.
+- [ ] API tests.
+- [ ] Frontend tests.
+- [ ] AI service tests remain passing.
+- [ ] Performance review.
+- [ ] Responsive testing.
 
-- [ ] Authentication review
-- [ ] Authorization review
-- [ ] Input validation review
-- [ ] CSV security review
-- [ ] Error handling review
-- [ ] Loading states
-- [ ] Empty states
-- [ ] API testing
-- [ ] Frontend testing
-- [ ] Performance review
-- [ ] Responsive testing
+Completion criteria:
 
-### Completion Criteria
+The core application is stable enough for a live demo.
 
-The core application is stable enough for demonstration.
-
----
-
-# Phase 11 — Optional Features
+## Phase 11 - Optional Features
 
 Only begin after the MVP is stable.
 
-- [ ] PDF bank statement parsing
-- [ ] Subscription detector
-- [ ] Bill reminders
-- [ ] Multi-account support
-- [ ] AI financial assistant
-- [ ] Benchmarking
-- [ ] Savings simulation
+- [ ] PDF bank statement parsing.
+- [ ] Bill reminders.
+- [ ] Advanced subscription detector.
+- [ ] Multi-account dashboard UI.
+- [ ] AI financial assistant.
+- [ ] Peer benchmarking.
+- [ ] Savings simulation.
+- [ ] MCP production hardening.
 
----
+## Phase 12 - Submission
 
-# Phase 12 — Submission
+- [ ] Deploy frontend.
+- [ ] Deploy backend.
+- [ ] Configure production environment variables.
+- [ ] Complete README.
+- [ ] Complete API documentation.
+- [ ] Add screenshots.
+- [ ] Prepare demo data.
+- [ ] Prepare presentation.
+- [ ] Review Git history.
+- [ ] Review individual contributions.
+- [ ] Perform final end-to-end demo.
 
-### Tasks
-
-- [ ] Deploy application
-- [ ] Complete README
-- [ ] Complete API documentation
-- [ ] Create architecture diagram
-- [ ] Add screenshots
-- [ ] Prepare presentation
-- [ ] Prepare demo data
-- [ ] Review Git history
-- [ ] Review individual contributions
-- [ ] Prepare technical viva
-- [ ] Perform final end-to-end demo
-
----
-
-# Definition of Done
+## Definition Of Done
 
 A phase is complete only when:
 
-- Implementation works
-- API/UI integration works
-- Errors are handled
-- Relevant documentation is updated
-- Code is understandable
-- Git history contains meaningful progress
-- Team members understand the implementation
+- Implementation works.
+- Frontend and API integration works where applicable.
+- Errors are handled.
+- Relevant documentation is updated.
+- Code is understandable.
+- Security rules are followed.
+- Team members can explain the implementation.

@@ -8,8 +8,6 @@ import (
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/core"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/datastore"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/duplicatechecker"
-	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/exchangerates"
-	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/llm"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/log"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/mail"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/settings"
@@ -91,15 +89,6 @@ func initializeSystem(c *core.CliContext) (*settings.Config, error) {
 		return nil, err
 	}
 
-	err = llm.InitializeLargeLanguageModelProvider(config)
-
-	if err != nil {
-		if !isDisableBootLog {
-			log.BootErrorf(c, "[initializer.initializeSystem] initializes large language model provider failed, because %s", err.Error())
-		}
-		return nil, err
-	}
-
 	err = uuid.InitializeUuidGenerator(config)
 
 	if err != nil {
@@ -132,15 +121,6 @@ func initializeSystem(c *core.CliContext) (*settings.Config, error) {
 	if err != nil {
 		if !isDisableBootLog {
 			log.BootErrorf(c, "[initializer.initializeSystem] initializes mailer failed, because %s", err.Error())
-		}
-		return nil, err
-	}
-
-	err = exchangerates.InitializeExchangeRatesDataSource(config)
-
-	if err != nil {
-		if !isDisableBootLog {
-			log.BootErrorf(c, "[initializer.initializeSystem] initializes exchange rates data source failed, because %s", err.Error())
 		}
 		return nil, err
 	}
