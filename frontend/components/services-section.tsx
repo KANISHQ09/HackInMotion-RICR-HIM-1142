@@ -1,6 +1,7 @@
 "use client"
 
 import { Home, Key, Shield } from "lucide-react"
+import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
 
 const services = [
@@ -109,9 +110,11 @@ export function ServicesSection() {
         <div ref={sectionRef} className="relative px-6 lg:px-8 py-16 lg:py-10 mb-32 overflow-hidden rounded-3xl">
           {/* Background image that spans full width */}
           <div className="absolute inset-0 w-full h-full">
-            <img
-              src="/images/7aecbceb-cbd3-4cbd-901c-dd0125d41525.png"
-              alt="Beautiful house"
+            <Image
+              src="/images/7aecbceb-cbd3-4cbd-901c-dd0125d41525.webp"
+              alt=""
+              fill
+              sizes="(min-width: 1280px) 1280px, 100vw"
               className={`w-full h-full object-cover transition-transform duration-1000 ease-out ${
                 isVisible ? "scale-100" : "scale-110"
               }`}

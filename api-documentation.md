@@ -18,6 +18,7 @@ Body:
 
 ```json
 {
+  "name": "Example User",
   "email": "user@example.com",
   "password": "password123"
 }
@@ -27,6 +28,10 @@ Response includes:
 
 - `token`
 - `user`
+
+Notes:
+
+- `name` is optional. When supplied, it is saved as the user's display nickname.
 
 ### `POST /api/auth/login`
 

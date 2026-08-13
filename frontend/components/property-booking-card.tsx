@@ -1,5 +1,3 @@
-"use client"
-
 import Image from "next/image"
 import { Home, Calendar, MapPin, Users, Wifi, Car, Waves } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -35,7 +33,7 @@ export function PropertyBookingCard({
 }: PropertyBookingCardProps) {
   return (
     <div
-      className={cn("w-full h-full flex flex-col overflow-hidden rounded-3xl bg-white shadow-card", className)}
+      className={cn("flex h-full w-full min-w-0 flex-col overflow-hidden rounded-lg bg-white shadow-card", className)}
       style={{
         boxShadow:
           "rgba(14, 63, 126, 0.04) 0px 0px 0px 1px, rgba(42, 51, 69, 0.04) 0px 1px 1px -0.5px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px, rgba(42, 51, 70, 0.04) 0px 6px 6px -3px, rgba(14, 63, 126, 0.04) 0px 12px 12px -6px, rgba(14, 63, 126, 0.04) 0px 24px 24px -12px",
@@ -43,7 +41,13 @@ export function PropertyBookingCard({
     >
       {/* Image */}
       <div className="relative aspect-[16/9] w-full overflow-hidden">
-        <Image src={image || "/placeholder.svg"} alt={propertyName} fill className="object-cover" />
+        <Image
+          src={image || "/placeholder.svg"}
+          alt={propertyName}
+          fill
+          sizes="(min-width: 1024px) 400px, (min-width: 640px) 60vw, 85vw"
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
         {rating && (
@@ -53,25 +57,25 @@ export function PropertyBookingCard({
         )}
 
         <div className="absolute bottom-3 left-3 right-3">
-          <div className="mb-1 flex items-center gap-2">
-            <Home className="h-5 w-5 text-white" />
-            {propertyType && <span className="text-sm font-medium text-white/90">{propertyType}</span>}
+          <div className="mb-1 flex min-w-0 items-center gap-2">
+            <Home className="h-5 w-5 shrink-0 text-white" />
+            {propertyType && <span className="truncate text-sm font-medium text-white/90">{propertyType}</span>}
           </div>
-          <h3 className="text-balance text-2xl font-bold text-white">{propertyName}</h3>
+          <h3 className="line-clamp-2 break-words text-2xl font-bold text-white">{propertyName}</h3>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-6 flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
         {/* Property details */}
         <div className="mb-4 space-y-2">
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <MapPin className="h-4 w-4" />
-            <span>{location}</span>
+          <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600">
+            <MapPin className="h-4 w-4 shrink-0" />
+            <span className="truncate">{location}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            <Calendar className="h-4 w-4" />
-            <span>
+          <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600">
+            <Calendar className="h-4 w-4 shrink-0" />
+            <span className="truncate">
               {availableDate} • {duration}
             </span>
           </div>
@@ -83,7 +87,7 @@ export function PropertyBookingCard({
             <div className="mb-2 text-sm font-semibold text-slate-900">Key Highlights</div>
             <div className="flex flex-wrap gap-2">
               {features.slice(0, 3).map((feature, index) => (
-                <span key={index} className="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
+                <span key={index} className="max-w-full rounded-lg bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
                   {feature}
                 </span>
               ))}
@@ -106,9 +110,9 @@ export function PropertyBookingCard({
               if (amenity.toLowerCase().includes("pool")) Icon = Waves
 
               return (
-                <div key={index} className="flex items-center gap-1.5 text-sm text-slate-600">
-                  <Icon className="h-4 w-4" />
-                  <span>{amenity}</span>
+                <div key={index} className="flex min-w-0 items-center gap-1.5 text-sm text-slate-600">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{amenity}</span>
                 </div>
               )
             })}
@@ -116,16 +120,19 @@ export function PropertyBookingCard({
         )}
 
         {/* Price & button */}
-        <div className="flex items-center justify-between mt-auto pt-4">
-          <div>
+        <div className="mt-auto flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <div className="text-sm text-slate-500">Tier</div>
-            <div className="text-2xl font-bold text-slate-900">
+            <div className="break-words text-2xl font-bold leading-tight text-slate-900">
               {currency}
               {pricePerNight}
               <span className="text-sm font-normal text-slate-500"> Included</span>
             </div>
           </div>
-          <button className="rounded-xl bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:bg-foreground/90 text-sm">
+          <button
+            type="button"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-foreground/90 sm:px-6"
+          >
             Explore
           </button>
         </div>

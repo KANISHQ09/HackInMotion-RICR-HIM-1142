@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -83,8 +84,6 @@ func startWebServer(c *core.CliContext) error {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	workboxFileNames := utils.ListFileNamesWithPrefixAndSuffix(config.StaticRootPath, "workbox-", ".js")
-
 	router := gin.New()
 	router.Use(bindMiddleware(middlewares.Recovery, config))
 
@@ -116,58 +115,62 @@ func startWebServer(c *core.CliContext) error {
 	router.NoMethod(bindApi(api.Default.MethodNotAllowed, config))
 
 	serverSettingsCacheStore := persistence.NewInMemoryStore(time.Minute)
-
-	router.StaticFile("/", filepath.Join(config.StaticRootPath, "index.html"))
-	router.Static("/js", filepath.Join(config.StaticRootPath, "js"))
-	router.Static("/css", filepath.Join(config.StaticRootPath, "css"))
-	router.Static("/img", filepath.Join(config.StaticRootPath, "img"))
-	router.Static("/fonts", filepath.Join(config.StaticRootPath, "fonts"))
-
-	router.StaticFile("robots.txt", filepath.Join(config.StaticRootPath, "robots.txt"))
-	router.StaticFile("favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
-	router.StaticFile("favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
-	router.StaticFile("touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
-	router.StaticFile("manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
-	router.StaticFile("sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
 	router.GET("/server_settings.js", bindCachedJs(api.ServerSettings.ServerSettingsJavascriptHandler, config, serverSettingsCacheStore))
 
-	for i := 0; i < len(workboxFileNames); i++ {
-		router.StaticFile("/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
-	}
+	if _, err = os.Stat(config.StaticRootPath); err == nil {
+		workboxFileNames := utils.ListFileNamesWithPrefixAndSuffix(config.StaticRootPath, "workbox-", ".js")
 
-	router.StaticFile("/mobile", filepath.Join(config.StaticRootPath, "mobile.html"))
-	router.Match([]string{http.MethodHead, http.MethodGet}, "/mobile#/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "mobile.html")))  // add compatibility for browsers that send the full URL with the fragment to the server
-	router.Match([]string{http.MethodHead, http.MethodGet}, "/mobile#!/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "mobile.html"))) // add compatibility for browsers that send the full URL with the fragment to the server
-	router.Static("/mobile/js", filepath.Join(config.StaticRootPath, "js"))
-	router.Static("/mobile/css", filepath.Join(config.StaticRootPath, "css"))
-	router.Static("/mobile/img", filepath.Join(config.StaticRootPath, "img"))
-	router.Static("/mobile/fonts", filepath.Join(config.StaticRootPath, "fonts"))
-	router.StaticFile("/mobile/favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
-	router.StaticFile("/mobile/favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
-	router.StaticFile("/mobile/touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
-	router.StaticFile("/mobile/manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
-	router.StaticFile("/mobile/sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
-	router.GET("/mobile/server_settings.js", bindCachedJs(api.ServerSettings.ServerSettingsJavascriptHandler, config, serverSettingsCacheStore))
+		router.StaticFile("/", filepath.Join(config.StaticRootPath, "index.html"))
+		router.Static("/js", filepath.Join(config.StaticRootPath, "js"))
+		router.Static("/css", filepath.Join(config.StaticRootPath, "css"))
+		router.Static("/img", filepath.Join(config.StaticRootPath, "img"))
+		router.Static("/fonts", filepath.Join(config.StaticRootPath, "fonts"))
 
-	for i := 0; i < len(workboxFileNames); i++ {
-		router.StaticFile("/mobile/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
-	}
+		router.StaticFile("robots.txt", filepath.Join(config.StaticRootPath, "robots.txt"))
+		router.StaticFile("favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
+		router.StaticFile("favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
+		router.StaticFile("touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
+		router.StaticFile("manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
+		router.StaticFile("sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
 
-	router.StaticFile("/desktop", filepath.Join(config.StaticRootPath, "desktop.html"))
-	router.Match([]string{http.MethodHead, http.MethodGet}, "/desktop#/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "desktop.html"))) // add compatibility for browsers that send the full URL with the fragment to the server
-	router.Static("/desktop/js", filepath.Join(config.StaticRootPath, "js"))
-	router.Static("/desktop/css", filepath.Join(config.StaticRootPath, "css"))
-	router.Static("/desktop/img", filepath.Join(config.StaticRootPath, "img"))
-	router.Static("/desktop/fonts", filepath.Join(config.StaticRootPath, "fonts"))
-	router.StaticFile("/desktop/favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
-	router.StaticFile("/desktop/favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
-	router.StaticFile("/desktop/touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
-	router.StaticFile("/desktop/manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
-	router.StaticFile("/desktop/sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
-	router.GET("/desktop/server_settings.js", bindCachedJs(api.ServerSettings.ServerSettingsJavascriptHandler, config, serverSettingsCacheStore))
+		for i := 0; i < len(workboxFileNames); i++ {
+			router.StaticFile("/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
+		}
 
-	for i := 0; i < len(workboxFileNames); i++ {
-		router.StaticFile("/desktop/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
+		router.StaticFile("/mobile", filepath.Join(config.StaticRootPath, "mobile.html"))
+		router.Match([]string{http.MethodHead, http.MethodGet}, "/mobile#/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "mobile.html")))  // add compatibility for browsers that send the full URL with the fragment to the server
+		router.Match([]string{http.MethodHead, http.MethodGet}, "/mobile#!/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "mobile.html"))) // add compatibility for browsers that send the full URL with the fragment to the server
+		router.Static("/mobile/js", filepath.Join(config.StaticRootPath, "js"))
+		router.Static("/mobile/css", filepath.Join(config.StaticRootPath, "css"))
+		router.Static("/mobile/img", filepath.Join(config.StaticRootPath, "img"))
+		router.Static("/mobile/fonts", filepath.Join(config.StaticRootPath, "fonts"))
+		router.StaticFile("/mobile/favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
+		router.StaticFile("/mobile/favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
+		router.StaticFile("/mobile/touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
+		router.StaticFile("/mobile/manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
+		router.StaticFile("/mobile/sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
+		router.GET("/mobile/server_settings.js", bindCachedJs(api.ServerSettings.ServerSettingsJavascriptHandler, config, serverSettingsCacheStore))
+
+		for i := 0; i < len(workboxFileNames); i++ {
+			router.StaticFile("/mobile/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
+		}
+
+		router.StaticFile("/desktop", filepath.Join(config.StaticRootPath, "desktop.html"))
+		router.Match([]string{http.MethodHead, http.MethodGet}, "/desktop#/*fragment", bindLocalFile(filepath.Join(config.StaticRootPath, "desktop.html"))) // add compatibility for browsers that send the full URL with the fragment to the server
+		router.Static("/desktop/js", filepath.Join(config.StaticRootPath, "js"))
+		router.Static("/desktop/css", filepath.Join(config.StaticRootPath, "css"))
+		router.Static("/desktop/img", filepath.Join(config.StaticRootPath, "img"))
+		router.Static("/desktop/fonts", filepath.Join(config.StaticRootPath, "fonts"))
+		router.StaticFile("/desktop/favicon.ico", filepath.Join(config.StaticRootPath, "favicon.ico"))
+		router.StaticFile("/desktop/favicon.png", filepath.Join(config.StaticRootPath, "favicon.png"))
+		router.StaticFile("/desktop/touchicon.png", filepath.Join(config.StaticRootPath, "touchicon.png"))
+		router.StaticFile("/desktop/manifest.json", filepath.Join(config.StaticRootPath, "manifest.json"))
+		router.StaticFile("/desktop/sw.js", filepath.Join(config.StaticRootPath, "sw.js"))
+		router.GET("/desktop/server_settings.js", bindCachedJs(api.ServerSettings.ServerSettingsJavascriptHandler, config, serverSettingsCacheStore))
+
+		for i := 0; i < len(workboxFileNames); i++ {
+			router.StaticFile("/desktop/"+workboxFileNames[i], filepath.Join(config.StaticRootPath, workboxFileNames[i]))
+		}
 	}
 
 	router.GET("/healthz.json", bindApi(api.Healths.HealthStatusHandler, config))
@@ -201,6 +204,8 @@ func startWebServer(c *core.CliContext) error {
 			protectedRoute.POST("/budgets", bindApi(api.SmartFinance.CreateBudgetHandler, config))
 			protectedRoute.GET("/goals", bindApi(api.SmartFinance.ListGoalsHandler, config))
 			protectedRoute.POST("/goals", bindApi(api.SmartFinance.CreateGoalHandler, config))
+			protectedRoute.GET("/planned-addons", bindApi(api.SmartFinance.ListPlannedAddOnsHandler, config))
+			protectedRoute.POST("/planned-addons", bindApi(api.SmartFinance.CreatePlannedAddOnHandler, config))
 			protectedRoute.GET("/system/version", bindApi(api.Systems.VersionHandler, config))
 		}
 	}

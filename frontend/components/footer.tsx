@@ -33,7 +33,13 @@ export function Footer() {
   return (
     <div className="relative">
       <div className="absolute -top-[20vw] left-0 right-0 w-full h-[50vw] z-0 overflow-hidden">
-        <Image src="/images/footer-bg.png" alt="Tuscan landscape" fill className="object-cover" priority />
+        <Image
+          src="/images/footer-bg.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
       </div>
 
       <div className="absolute -top-[15vw] left-0 right-0 flex items-end justify-center overflow-visible pointer-events-none z-10">

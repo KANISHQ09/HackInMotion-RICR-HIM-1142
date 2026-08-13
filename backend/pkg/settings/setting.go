@@ -689,8 +689,11 @@ func loadServerConfiguration(config *Config, configFile *ini.File, sectionName s
 	staticRootPath := getConfigItemStringValue(configFile, sectionName, "static_root_path", defaultStaticRootPath)
 	finalStaticRootPath, err := getFinalPath(config.WorkingPath, staticRootPath)
 
-	if err != nil {
-		return err
+	if err != nil && staticRootPath != "" {
+		finalStaticRootPath = staticRootPath
+		if !filepath.IsAbs(finalStaticRootPath) {
+			finalStaticRootPath = filepath.Join(config.WorkingPath, finalStaticRootPath)
+		}
 	}
 
 	config.StaticRootPath = finalStaticRootPath
