@@ -14,6 +14,20 @@ type Budget struct {
 	DeletedUnixTime int64
 }
 
+// CategoryRule stores a user-created merchant/category learning rule.
+type CategoryRule struct {
+	RuleId          int64  `xorm:"PK AUTOINCR"`
+	Uid             int64  `xorm:"INDEX(IDX_category_rule_uid_deleted) NOT NULL"`
+	Deleted         bool   `xorm:"INDEX(IDX_category_rule_uid_deleted) NOT NULL"`
+	MerchantPattern string `xorm:"VARCHAR(128) NOT NULL"`
+	CategoryId      int64  `xorm:"INDEX(IDX_category_rule_uid_category)"`
+	CategoryName    string `xorm:"VARCHAR(64) NOT NULL"`
+	TransactionType string `xorm:"VARCHAR(16) NOT NULL"`
+	CreatedUnixTime int64
+	UpdatedUnixTime int64
+	DeletedUnixTime int64
+}
+
 // SavingsGoal represents a user savings target.
 type SavingsGoal struct {
 	GoalId          int64  `xorm:"PK AUTOINCR"`
