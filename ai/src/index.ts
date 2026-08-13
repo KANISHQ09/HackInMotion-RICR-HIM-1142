@@ -4,6 +4,7 @@ import { normalizeTransaction } from './normalization/transaction.js';
 import { categorizeTransaction } from './categorization/index.js';
 import { processAssistantMessage } from './assistant/index.js';
 import { runSavingsSimulation } from './simulation/index.js';
+import { analyzeFinancialIntelligence } from './intelligence/index.js';
 
 const config = getConfig();
 const PORT = config.port;
@@ -195,6 +196,58 @@ export const server = http.createServer(async (req, res) => {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Internal simulation processing error';
+      sendJson(res, 500, {
+        success: false,
+        error: message,
+      });
+      return;
+    }
+  }
+
+  // POST /api/v1/insights
+  if (method === 'POST' && url.pathname === '/api/v1/insights') {
+    try {
+      const rawBody = await readRequestBody(req);
+      if (!rawBody.trim()) {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Missing request body',
+        });
+        return;
+      }
+
+      let parsedBody: unknown;
+      try {
+        parsedBody = JSON.parse(rawBody);
+      } catch {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Invalid JSON payload in request body',
+        });
+        return;
+      }
+
+      const inputContext = (parsedBody && typeof parsedBody === 'object' && 'context' in parsedBody)
+        ? (parsedBody as Record<string, unknown>).context
+        : parsedBody;
+
+      try {
+        const data = await analyzeFinancialIntelligence(inputContext);
+        sendJson(res, 200, {
+          success: true,
+          data,
+        });
+        return;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Insights context validation failed';
+        sendJson(res, 400, {
+          success: false,
+          error: message,
+        });
+        return;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Internal insights processing error';
       sendJson(res, 500, {
         success: false,
         error: message,
