@@ -2,6 +2,8 @@ import http from 'node:http';
 import { getConfig } from './config.js';
 import { normalizeTransaction } from './normalization/transaction.js';
 import { categorizeTransaction } from './categorization/index.js';
+import { processAssistantMessage } from './assistant/index.js';
+import { runSavingsSimulation } from './simulation/index.js';
 
 const config = getConfig();
 const PORT = config.port;
@@ -97,6 +99,102 @@ export const server = http.createServer(async (req, res) => {
       return;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Internal categorization error';
+      sendJson(res, 500, {
+        success: false,
+        error: message,
+      });
+      return;
+    }
+  }
+
+  // POST /api/v1/assistant
+  if (method === 'POST' && url.pathname === '/api/v1/assistant') {
+    try {
+      const rawBody = await readRequestBody(req);
+      if (!rawBody.trim()) {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Missing request body',
+        });
+        return;
+      }
+
+      let parsedBody: unknown;
+      try {
+        parsedBody = JSON.parse(rawBody);
+      } catch {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Invalid JSON payload in request body',
+        });
+        return;
+      }
+
+      try {
+        const data = await processAssistantMessage(parsedBody);
+        sendJson(res, 200, {
+          success: true,
+          data,
+        });
+        return;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Assistant request validation failed';
+        sendJson(res, 400, {
+          success: false,
+          error: message,
+        });
+        return;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Internal assistant processing error';
+      sendJson(res, 500, {
+        success: false,
+        error: message,
+      });
+      return;
+    }
+  }
+
+  // POST /api/v1/simulate
+  if (method === 'POST' && url.pathname === '/api/v1/simulate') {
+    try {
+      const rawBody = await readRequestBody(req);
+      if (!rawBody.trim()) {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Missing request body',
+        });
+        return;
+      }
+
+      let parsedBody: unknown;
+      try {
+        parsedBody = JSON.parse(rawBody);
+      } catch {
+        sendJson(res, 400, {
+          success: false,
+          error: 'Invalid JSON payload in request body',
+        });
+        return;
+      }
+
+      try {
+        const simulation = await runSavingsSimulation(parsedBody);
+        sendJson(res, 200, {
+          success: true,
+          simulation,
+        });
+        return;
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Simulation validation failed';
+        sendJson(res, 400, {
+          success: false,
+          error: message,
+        });
+        return;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Internal simulation processing error';
       sendJson(res, 500, {
         success: false,
         error: message,

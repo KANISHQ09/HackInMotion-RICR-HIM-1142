@@ -127,6 +127,71 @@ test('HTTP POST /api/v1/categorize rejects invalid transaction payload with 400'
   assert.ok(res.body.error.includes('Transaction validation failed'));
 });
 
+test('HTTP POST /api/v1/assistant answers financial questions', async () => {
+  const payload = {
+    message: 'How much did I spend on food?',
+    context: {
+      currency: 'INR',
+      categories: [{ category: 'Food', amount: 8400, percentage: 20 }],
+    },
+  };
+
+  const res = await postJson('/api/v1/assistant', payload);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.success, true);
+  assert.equal(res.body.data.intent, 'category_spending');
+  assert.ok(res.body.data.answer.includes('8,400') || res.body.data.answer.includes('8400'));
+});
+
+test('HTTP POST /api/v1/assistant rejects empty message with 400', async () => {
+  const payload = {
+    message: '',
+    context: {},
+  };
+
+  const res = await postJson('/api/v1/assistant', payload);
+  assert.equal(res.status, 400);
+  assert.equal(res.body.success, false);
+});
+
+test('HTTP POST /api/v1/simulate processes savings simulation scenario', async () => {
+  const payload = {
+    currency: 'INR',
+    monthlyIncome: 65000,
+    currentMonthlyExpenses: 48200,
+    scenario: {
+      type: 'category_reduction',
+      category: 'Food',
+      currentMonthlySpend: 8400,
+      reductionPercent: 30,
+    },
+    months: 12,
+  };
+
+  const res = await postJson('/api/v1/simulate', payload);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.success, true);
+  assert.equal(res.body.simulation.impact.monthlySavingsIncrease, 2520);
+  assert.equal(res.body.simulation.impact.annualSavingsIncrease, 30240);
+  assert.ok(res.body.simulation.explanation.length > 10);
+});
+
+test('HTTP POST /api/v1/simulate rejects invalid simulation scenario with 400', async () => {
+  const payload = {
+    monthlyIncome: -1000, // Invalid negative income
+    currentMonthlyExpenses: 500,
+    scenario: {
+      type: 'category_reduction',
+      category: 'Food',
+      currentMonthlySpend: 8400,
+    },
+  };
+
+  const res = await postJson('/api/v1/simulate', payload);
+  assert.equal(res.status, 400);
+  assert.equal(res.body.success, false);
+});
+
 test('HTTP GET /unhandled-route returns 404 Not Found', async () => {
   const res = await getJson('/unhandled-route');
   assert.equal(res.status, 404);
