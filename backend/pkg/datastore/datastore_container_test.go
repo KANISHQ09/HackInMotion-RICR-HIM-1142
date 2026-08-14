@@ -65,3 +65,14 @@ func TestGetPostgreSQLConnectionString_UnixSocket(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, expectedValue, actualValue)
 }
+
+func TestGetSqlite3ConnectionString(t *testing.T) {
+	expectedValue := "file:/data/spendly.db?cache=shared&mode=rwc&_busy_timeout=5000"
+	actualValue, err := getSqlite3ConnectionString(&settings.DatabaseConfig{
+		DatabaseType: settings.Sqlite3DbType,
+		DatabasePath: "/data/spendly.db",
+	})
+
+	assert.Nil(t, err)
+	assert.Equal(t, expectedValue, actualValue)
+}

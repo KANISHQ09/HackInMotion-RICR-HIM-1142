@@ -1,17 +1,21 @@
 "use client"
 
 import { memo, useState } from "react"
-import { Bell, Globe2, ShieldCheck, UserRound, type LucideIcon } from "lucide-react"
-
-const profileRows = [
-  { label: "Name", value: "Himanshu B." },
-  { label: "Email", value: "himanshu@example.com" },
-  { label: "Plan", value: "Spendly Pro" },
-] as const
+import { Bell, GitCommit, Globe2, ShieldCheck, Tags, UserRound, type LucideIcon } from "lucide-react"
+import { useCurrentUser } from "@/hooks/use-auth-api"
+import { useCategoryRules, useSystemVersion } from "@/hooks/use-finance-api"
 
 export const SettingsDashboard = memo(function SettingsDashboard() {
   const [emailAlerts, setEmailAlerts] = useState(true)
   const [weeklySummary, setWeeklySummary] = useState(true)
+  const currentUser = useCurrentUser()
+  const categoryRules = useCategoryRules()
+  const systemVersion = useSystemVersion()
+  const profileRows = [
+    { label: "Name", value: currentUser.data?.nickname || currentUser.data?.username || "Spendly user" },
+    { label: "Email", value: currentUser.data?.email || "Loading..." },
+    { label: "Currency", value: currentUser.data?.defaultCurrency || "INR" },
+  ]
 
   return (
     <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-10 px-4 pb-28 pt-10 sm:px-6 md:px-12 md:py-20">
@@ -30,11 +34,58 @@ export const SettingsDashboard = memo(function SettingsDashboard() {
             <UserRound className="h-5 w-5" aria-hidden="true" />
             Profile
           </h2>
+          {currentUser.error ? (
+            <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="alert">
+              {currentUser.error.message}
+            </p>
+          ) : null}
           <div className="mt-5 divide-y divide-zinc-100">
             {profileRows.map((row) => (
               <div key={row.label} className="flex items-center justify-between gap-4 py-3">
                 <span className="text-sm font-medium text-zinc-500">{row.label}</span>
                 <strong className="text-sm font-semibold text-zinc-950">{row.value}</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="rounded-lg border border-zinc-200/80 bg-white p-6 shadow-[0_18px_45px_-32px_rgba(24,24,27,0.32)]">
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-950">
+            <Tags className="h-5 w-5" aria-hidden="true" />
+            Category Rules
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {categoryRules.isLoading ? (
+              <p className="rounded-lg bg-[#f7f3f2] p-4 text-sm font-medium text-zinc-500">
+                Loading merchant rules...
+              </p>
+            ) : null}
+
+            {categoryRules.error ? (
+              <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="alert">
+                {categoryRules.error.message}
+              </p>
+            ) : null}
+
+            {!categoryRules.isLoading && !categoryRules.error && categoryRules.data?.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-zinc-300 bg-[#f7f3f2] p-4 text-sm font-medium text-zinc-500">
+                No custom category rules yet.
+              </p>
+            ) : null}
+
+            {categoryRules.data?.slice(0, 5).map((rule) => (
+              <div key={rule.id} className="flex items-center justify-between gap-4 rounded-lg bg-[#f7f3f2] p-4">
+                <span className="min-w-0">
+                  <strong className="block truncate text-sm font-semibold text-zinc-950">
+                    {rule.merchantPattern}
+                  </strong>
+                  <span className="mt-1 block text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                    {rule.type}
+                  </span>
+                </span>
+                <span className="shrink-0 rounded-md bg-zinc-950 px-2 py-1 text-xs font-semibold text-white">
+                  {rule.category}
+                </span>
               </div>
             ))}
           </div>
@@ -70,7 +121,18 @@ export const SettingsDashboard = memo(function SettingsDashboard() {
           <StatusCard
             icon={Globe2}
             label="Region"
-            value="INR, English"
+            value={`${currentUser.data?.defaultCurrency || "INR"}, English`}
+          />
+          <StatusCard
+            icon={GitCommit}
+            label="Backend"
+            value={
+              systemVersion.data
+                ? `${systemVersion.data.version} (${systemVersion.data.commitHash || "local"})`
+                : systemVersion.isLoading
+                  ? "Checking version"
+                  : "Version unavailable"
+            }
           />
         </div>
       </section>

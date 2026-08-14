@@ -3,11 +3,13 @@ import { ArrowRight, Loader2, X } from "lucide-react"
 
 export const ActionBar = memo(function ActionBar({
   hasFile,
+  rowCount,
   isImporting,
   onCancel,
   onContinue,
 }: {
   hasFile: boolean
+  rowCount: number
   isImporting: boolean
   onCancel: () => void
   onContinue: () => void
@@ -25,7 +27,7 @@ export const ActionBar = memo(function ActionBar({
       <button
         type="button"
         className="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50 md:flex-none md:px-5"
-        disabled={!hasFile || isImporting}
+        disabled={!hasFile || rowCount === 0 || isImporting}
         onClick={onContinue}
       >
         {isImporting ? (
@@ -33,7 +35,7 @@ export const ActionBar = memo(function ActionBar({
         ) : (
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         )}
-        {isImporting ? "Importing" : "Continue"}
+        {isImporting ? "Importing" : `Import & Save ${rowCount || ""}`}
       </button>
     </div>
   )

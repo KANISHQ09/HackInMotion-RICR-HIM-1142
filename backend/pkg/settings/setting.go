@@ -476,6 +476,11 @@ type Config struct {
 	ExchangeRatesSkipTLSVerify                    bool
 }
 
+// IsHTTPS reports whether clients access the application over HTTPS.
+func (c *Config) IsHTTPS() bool {
+	return c.Protocol == SCHEME_HTTPS || strings.HasPrefix(strings.ToLower(c.RootUrl), "https://")
+}
+
 // LoadConfiguration loads setting config from given config file path
 func LoadConfiguration(configFilePath string) (*Config, error) {
 	var err error

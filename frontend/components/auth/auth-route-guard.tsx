@@ -1,9 +1,9 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { memo, useEffect, useState } from "react"
+import { memo, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { hasAuthSession } from "@/lib/auth-storage"
+import { useCurrentUser } from "@/hooks/use-auth-api"
 
 type AuthRouteGuardProps = {
   children: ReactNode
@@ -17,23 +17,18 @@ export const AuthRouteGuard = memo(function AuthRouteGuard({
   redirectTo,
 }: AuthRouteGuardProps) {
   const router = useRouter()
-  const [isAllowed, setIsAllowed] = useState(false)
+  const currentUser = useCurrentUser()
+  const isAllowed = mode === "protected" ? currentUser.isSuccess : currentUser.isError
 
   useEffect(() => {
-    const isLoggedIn = hasAuthSession()
-
-    if (mode === "protected" && !isLoggedIn) {
-      router.replace(redirectTo ?? "/login")
-      return
-    }
-
-    if (mode === "guest" && isLoggedIn) {
+    if (mode === "guest" && currentUser.isSuccess) {
       router.replace(redirectTo ?? "/dashboard")
-      return
     }
 
-    setIsAllowed(true)
-  }, [mode, redirectTo, router])
+    if (mode === "protected" && currentUser.isError) {
+      router.replace(redirectTo ?? "/login")
+    }
+  }, [currentUser.isError, currentUser.isSuccess, mode, redirectTo, router])
 
   if (!isAllowed) {
     return (

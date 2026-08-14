@@ -7,10 +7,15 @@ import { ActionBar } from "@/components/dashboard/import/action-bar"
 import { HowItWorksCard } from "@/components/dashboard/import/how-it-works-card"
 import { ManualTransactionModal } from "@/components/dashboard/import/manual-transaction-modal"
 import { PageHeader } from "@/components/dashboard/import/page-header"
+import { PlannedAddOnModal } from "@/components/dashboard/import/planned-addon-modal"
+import { PlannedAddOnsCard } from "@/components/dashboard/import/planned-addons-card"
+import { PersistedTransactionsCard } from "@/components/dashboard/import/persisted-transactions-card"
 import { PreviewCardSkeleton } from "@/components/dashboard/import/preview-card-skeleton"
 import { UploadCard } from "@/components/dashboard/import/upload-card"
 import { useTransactionImport } from "@/components/dashboard/import/use-transaction-import"
-import type { Transaction } from "@/lib/api-client"
+import type { PlannedAddOn, Transaction } from "@/api/types"
+import { usePlannedAddOns } from "@/hooks/use-planned-addons-api"
+import { useImportedTransactions } from "@/hooks/use-transactions-api"
 
 const PreviewCard = dynamic(
   () => import("@/components/dashboard/import/preview-card").then((module) => module.PreviewCard),
@@ -21,10 +26,13 @@ const PreviewCard = dynamic(
 
 export function TransactionImportDashboard() {
   const importState = useTransactionImport()
+  const plannedAddOns = usePlannedAddOns()
+  const importedTransactions = useImportedTransactions()
   const deferredFile = useDeferredValue(importState.file)
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isManualModalOpen, setIsManualModalOpen] = useState(false)
+  const [isPlannedModalOpen, setIsPlannedModalOpen] = useState(false)
   const [createdTransactions, setCreatedTransactions] = useState<Transaction[]>([])
 
   useEffect(() => {
@@ -44,13 +52,25 @@ export function TransactionImportDashboard() {
     }
   }, [router, searchParams])
 
+  const openPlannedModal = useCallback(() => {
+    setIsPlannedModalOpen(true)
+  }, [])
+
+  const closePlannedModal = useCallback(() => {
+    setIsPlannedModalOpen(false)
+  }, [])
+
   const handleTransactionCreated = useCallback((transaction: Transaction) => {
     setCreatedTransactions((current) => [transaction, ...current].slice(0, 4))
   }, [])
 
+  const handlePlannedAddOnCreated = useCallback((_addOn: PlannedAddOn) => {
+    setIsPlannedModalOpen(false)
+  }, [])
+
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-12 px-4 pb-32 pt-12 md:px-6 md:pt-20">
-      <PageHeader onAddClick={openManualModal} />
+      <PageHeader onAddClick={openManualModal} onPlanClick={openPlannedModal} />
 
       {createdTransactions.length > 0 && (
         <section className="rounded-lg border border-zinc-200/80 bg-white p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] md:p-6" aria-labelledby="manual-transactions-title">
@@ -84,6 +104,12 @@ export function TransactionImportDashboard() {
         </section>
       )}
 
+      <PlannedAddOnsCard
+        addOns={plannedAddOns.data ?? []}
+        error={plannedAddOns.error?.message ?? ""}
+        isLoading={plannedAddOns.isLoading}
+      />
+
       <section className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]" aria-label="Transaction import">
         <UploadCard {...importState} />
         <HowItWorksCard />
@@ -95,8 +121,15 @@ export function TransactionImportDashboard() {
         parseResult={importState.parseResult}
       />
 
+      <PersistedTransactionsCard
+        transactions={importedTransactions.data ?? []}
+        error={importedTransactions.error?.message ?? ""}
+        isLoading={importedTransactions.isLoading}
+      />
+
       <ActionBar
         hasFile={Boolean(importState.file)}
+        rowCount={importState.parseResult.rowsReady}
         isImporting={importState.isImporting}
         onCancel={importState.clearFile}
         onContinue={importState.submitImport}
@@ -105,6 +138,11 @@ export function TransactionImportDashboard() {
         isOpen={isManualModalOpen}
         onClose={closeManualModal}
         onCreated={handleTransactionCreated}
+      />
+      <PlannedAddOnModal
+        isOpen={isPlannedModalOpen}
+        onClose={closePlannedModal}
+        onCreated={handlePlannedAddOnCreated}
       />
     </div>
   )

@@ -82,7 +82,7 @@ export const UploadCard = memo(function UploadCard({
           className="mt-1 inline-flex flex-wrap items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] text-zinc-500"
         >
           <Info className="h-4 w-4" aria-hidden="true" />
-          Maximum file size: 10MB. Supported format: CSV.
+          Maximum file size: 5MB. Supported format: CSV.
         </p>
 
         {error && (

@@ -2,6 +2,7 @@ package core
 
 import (
 	"net"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -175,11 +176,13 @@ func (c *WebContext) GetTokenStringFromCookie() string {
 	return tokenCookie
 }
 
-func (c *WebContext) SetTokenStringToCookie(token string, tokenExpiredTime int, path string) {
+func (c *WebContext) SetTokenStringToCookie(token string, tokenExpiredTime int, path string, secure bool) {
+	c.SetSameSite(http.SameSiteLaxMode)
+
 	if token != "" {
-		c.SetCookie(tokenCookieParam, token, tokenExpiredTime, path, "", false, true)
+		c.SetCookie(tokenCookieParam, token, tokenExpiredTime, path, "", secure, true)
 	} else {
-		c.SetCookie(tokenCookieParam, "", -1, path, "", false, true)
+		c.SetCookie(tokenCookieParam, "", -1, path, "", secure, true)
 	}
 }
 

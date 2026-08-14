@@ -5,12 +5,7 @@
     "description": "SRS-focused smoke-test collection. Run folders in order: Auth, Transactions, Analytics, Budgets, Goals. Import the Smart Finance Backend Local environment first.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      { "key": "token", "value": "{{authToken}}", "type": "string" }
-    ]
-  },
+  "auth": { "type": "noauth" },
   "event": [
     {
       "listen": "prerequest",
@@ -50,18 +45,6 @@
         },
         {
           "name": "Register",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.success && json.result && json.result.token) pm.environment.set('authToken', json.result.token);"
-                ]
-              }
-            }
-          ],
           "request": {
             "auth": { "type": "noauth" },
             "method": "POST",
@@ -75,18 +58,6 @@
         },
         {
           "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const json = pm.response.json();",
-                  "if (json.success && json.result && json.result.token) pm.environment.set('authToken', json.result.token);"
-                ]
-              }
-            }
-          ],
           "request": {
             "auth": { "type": "noauth" },
             "method": "POST",
@@ -103,6 +74,13 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/auth/logout"
           }
         }
       ]

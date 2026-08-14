@@ -19,11 +19,13 @@ import (
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/services"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/utils"
 	"github.com/HackInMotion-RICR-HIM-1142/HackInMotion-RICR-HIM-1142/pkg/uuid"
+	"xorm.io/xorm"
 )
 
 const smartFinanceDefaultCurrency = "INR"
 const smartFinanceDefaultAccountName = "Primary Account"
 const smartFinanceMaxCSVImportSize = 5 * 1024 * 1024
+const smartFinanceLegacyTransactionTimeCutoff int64 = 100_000_000_000
 
 type smartFinanceTransactionType string
 
@@ -259,6 +261,7 @@ func (a *SmartFinanceApi) RegisterHandler(c *core.WebContext) (any, *errs.Error)
 
 	token, claims, err := a.tokens.CreateToken(c, user)
 	if err != nil {
+		log.Errorf(c, "[smart_finance.RegisterHandler] failed to create token, because %s", err.Error())
 		return nil, errs.ErrTokenGenerating
 	}
 
@@ -267,8 +270,7 @@ func (a *SmartFinanceApi) RegisterHandler(c *core.WebContext) (any, *errs.Error)
 	c.SetTokenContext("")
 
 	return core.O{
-		"token": token,
-		"user":  smartFinanceUserResponse(user),
+		"user": smartFinanceUserResponse(user),
 	}, nil
 }
 
@@ -285,6 +287,7 @@ func (a *SmartFinanceApi) LoginHandler(c *core.WebContext) (any, *errs.Error) {
 
 	token, claims, err := a.tokens.CreateToken(c, user)
 	if err != nil {
+		log.Errorf(c, "[smart_finance.LoginHandler] failed to create token, because %s", err.Error())
 		return nil, errs.ErrTokenGenerating
 	}
 
@@ -293,9 +296,20 @@ func (a *SmartFinanceApi) LoginHandler(c *core.WebContext) (any, *errs.Error) {
 	c.SetTokenContext("")
 
 	return core.O{
-		"token": token,
-		"user":  smartFinanceUserResponse(user),
+		"user": smartFinanceUserResponse(user),
 	}, nil
+}
+
+func (a *SmartFinanceApi) LogoutHandler(c *core.WebContext) (any, *errs.Error) {
+	config := a.tokens.CurrentConfig()
+	c.SetTokenStringToCookie("", int(config.TokenExpiredTime), "/", config.IsHTTPS())
+
+	if err := a.tokens.DeleteTokenByClaims(c, c.GetTokenClaims()); err != nil {
+		log.Warnf(c, "[smart_finance.LogoutHandler] failed to revoke token, because %s", err.Error())
+		return nil, errs.Or(err, errs.ErrOperationFailed)
+	}
+
+	return nil, nil
 }
 
 func (a *SmartFinanceApi) CurrentUserHandler(c *core.WebContext) (any, *errs.Error) {
@@ -339,6 +353,24 @@ func (a *SmartFinanceApi) ListTransactionsHandler(c *core.WebContext) (any, *err
 	responses := make([]*smartFinanceTransactionResponse, len(transactions))
 	for i, tx := range transactions {
 		responses[i] = a.transactionResponse(c, tx)
+	}
+
+	return responses, nil
+}
+
+// ListImportedTransactionsHandler returns the authenticated user's persisted CSV transactions.
+func (a *SmartFinanceApi) ListImportedTransactionsHandler(c *core.WebContext) (any, *errs.Error) {
+	transactions, err := a.findTransactions(c, c.GetCurrentUid(), "", "", "", "", "")
+	if err != nil {
+		return nil, errs.Or(err, errs.ErrOperationFailed)
+	}
+
+	responses := make([]*smartFinanceTransactionResponse, 0, len(transactions))
+	for _, tx := range transactions {
+		response := a.transactionResponse(c, tx)
+		if response.Source == "csv" {
+			responses = append(responses, response)
+		}
 	}
 
 	return responses, nil
@@ -447,7 +479,10 @@ func (a *SmartFinanceApi) ImportTransactionsHandler(c *core.WebContext) (any, *e
 	}
 
 	seen := map[string]bool{}
-	existing, _ := a.findTransactions(c, c.GetCurrentUid(), "", "", "", "", "")
+	existing, err := a.findTransactions(c, c.GetCurrentUid(), "", "", "", "", "")
+	if err != nil {
+		return nil, errs.Or(err, errs.ErrOperationFailed)
+	}
 	for _, tx := range existing {
 		seen[smartFinanceDuplicateKey(a.transactionResponse(c, tx))] = true
 	}
@@ -489,14 +524,16 @@ func (a *SmartFinanceApi) ImportTransactionsHandler(c *core.WebContext) (any, *e
 			summary.Results = append(summary.Results, &smartFinanceImportRowResult{Row: rowNumber, Status: "duplicate"})
 			continue
 		}
-		seen[key] = true
 
-		_, insertErr := datastore.Container.UserDataStore.Query(c, c.GetCurrentUid()).Insert(tx)
+		// Use the transaction service so the row and its account balance are committed
+		// together, and same-second rows receive a unique persisted transaction time.
+		insertErr := services.Transactions.CreateTransaction(c, tx, nil, nil)
 		if insertErr != nil {
 			summary.RowsFailed++
 			summary.Results = append(summary.Results, &smartFinanceImportRowResult{Row: rowNumber, Status: "failed", Reason: insertErr.Error()})
 			continue
 		}
+		seen[key] = true
 
 		summary.RowsImported++
 		summary.Results = append(summary.Results, &smartFinanceImportRowResult{Row: rowNumber, Status: "imported", TraceId: utils.Int64ToString(tx.TransactionId)})
@@ -551,8 +588,8 @@ func (a *SmartFinanceApi) RecurringTransactionsHandler(c *core.WebContext) (any,
 			"type":        parts[1],
 			"category":    parts[2],
 			"count":       len(items),
-			"firstDate":   smartFinanceDateFromUnix(items[0].TransactionTime),
-			"lastDate":    smartFinanceDateFromUnix(items[len(items)-1].TransactionTime),
+			"firstDate":   smartFinanceDateFromTransactionTime(items[0].TransactionTime),
+			"lastDate":    smartFinanceDateFromTransactionTime(items[len(items)-1].TransactionTime),
 			"amount":      smartFinanceAmountToString(absInt64(items[len(items)-1].Amount)),
 		})
 	}
@@ -1200,10 +1237,9 @@ func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid in
 	}
 
 	dbType := models.TRANSACTION_DB_TYPE_EXPENSE
-	storedAmount := -amount
+	storedAmount := amount
 	if txType == smartFinanceCredit {
 		dbType = models.TRANSACTION_DB_TYPE_INCOME
-		storedAmount = amount
 	}
 
 	now := time.Now().Unix()
@@ -1213,7 +1249,7 @@ func (a *SmartFinanceApi) buildTransactionFromRequest(c *core.WebContext, uid in
 		Type:              dbType,
 		CategoryId:        categoryId,
 		AccountId:         accountId,
-		TransactionTime:   transactionDate.Unix(),
+		TransactionTime:   utils.GetMinTransactionTimeFromUnixTime(transactionDate.Unix()),
 		TimezoneUtcOffset: 330,
 		Amount:            storedAmount,
 		Comment:           smartFinanceComment(description, merchant, source),
@@ -1262,30 +1298,84 @@ func (a *SmartFinanceApi) ensureCategory(c *core.WebContext, uid int64, name str
 		categoryType = models.CATEGORY_TYPE_INCOME
 	}
 
-	category := &models.TransactionCategory{}
-	has, err := datastore.Container.UserDataStore.Query(c, uid).Where("uid=? AND deleted=? AND type=? AND name=?", uid, false, categoryType, name).Get(category)
-	if err != nil {
-		return 0, err
-	}
-	if has {
-		return category.CategoryId, nil
-	}
+	categoryId := int64(0)
+	err := datastore.Container.UserDataStore.DoTransaction(uid, c, func(session *xorm.Session) error {
+		// Transactions must reference a secondary category. Older SmartFinance
+		// imports created categories at the root level, which the transaction
+		// service correctly rejects. Only reuse selectable child categories here.
+		category := &models.TransactionCategory{}
+		has, err := session.Where(
+			"uid=? AND deleted=? AND type=? AND parent_category_id<>? AND name=?",
+			uid,
+			false,
+			categoryType,
+			models.LevelOneTransactionCategoryParentId,
+			name,
+		).Get(category)
+		if err != nil {
+			return err
+		}
+		if has {
+			categoryId = category.CategoryId
+			return nil
+		}
 
-	now := time.Now().Unix()
-	category = &models.TransactionCategory{
-		CategoryId:       uuid.Container.GenerateUuid(uuid.UUID_TYPE_CATEGORY),
-		Uid:              uid,
-		Type:             categoryType,
-		ParentCategoryId: models.LevelOneTransactionCategoryParentId,
-		Name:             name,
-		Icon:             1,
-		Color:            smartFinanceCategoryColor(name),
-		CreatedUnixTime:  now,
-		UpdatedUnixTime:  now,
-	}
+		parentName := "Expenses"
+		if categoryType == models.CATEGORY_TYPE_INCOME {
+			parentName = "Income"
+		}
 
-	_, err = datastore.Container.UserDataStore.Query(c, uid).Insert(category)
-	return category.CategoryId, err
+		parent := &models.TransactionCategory{}
+		has, err = session.Where(
+			"uid=? AND deleted=? AND type=? AND parent_category_id=? AND name=?",
+			uid,
+			false,
+			categoryType,
+			models.LevelOneTransactionCategoryParentId,
+			parentName,
+		).Get(parent)
+		if err != nil {
+			return err
+		}
+
+		now := time.Now().Unix()
+		if !has {
+			parent = &models.TransactionCategory{
+				CategoryId:       uuid.Container.GenerateUuid(uuid.UUID_TYPE_CATEGORY),
+				Uid:              uid,
+				Type:             categoryType,
+				ParentCategoryId: models.LevelOneTransactionCategoryParentId,
+				Name:             parentName,
+				Icon:             1,
+				Color:            smartFinanceCategoryColor(parentName),
+				CreatedUnixTime:  now,
+				UpdatedUnixTime:  now,
+			}
+			if _, err = session.Insert(parent); err != nil {
+				return err
+			}
+		}
+
+		category = &models.TransactionCategory{
+			CategoryId:       uuid.Container.GenerateUuid(uuid.UUID_TYPE_CATEGORY),
+			Uid:              uid,
+			Type:             categoryType,
+			ParentCategoryId: parent.CategoryId,
+			Name:             name,
+			Icon:             1,
+			Color:            smartFinanceCategoryColor(name),
+			CreatedUnixTime:  now,
+			UpdatedUnixTime:  now,
+		}
+		if _, err = session.Insert(category); err != nil {
+			return err
+		}
+
+		categoryId = category.CategoryId
+		return nil
+	})
+
+	return categoryId, err
 }
 
 func (a *SmartFinanceApi) getTransaction(c *core.WebContext, uid int64, id int64) (*models.Transaction, error) {
@@ -1344,7 +1434,13 @@ func (a *SmartFinanceApi) findTransactions(c *core.WebContext, uid int64, startD
 		if err != nil {
 			return nil, err
 		}
-		session.And("transaction_time>=?", t.Unix())
+		session.And(
+			"((transaction_time<? AND transaction_time>=?) OR (transaction_time>=? AND transaction_time>=?))",
+			smartFinanceLegacyTransactionTimeCutoff,
+			t.Unix(),
+			smartFinanceLegacyTransactionTimeCutoff,
+			utils.GetMinTransactionTimeFromUnixTime(t.Unix()),
+		)
 	}
 
 	if endDate != "" {
@@ -1352,7 +1448,14 @@ func (a *SmartFinanceApi) findTransactions(c *core.WebContext, uid int64, startD
 		if err != nil {
 			return nil, err
 		}
-		session.And("transaction_time<?", t.Add(24*time.Hour).Unix())
+		endUnix := t.Add(24 * time.Hour).Unix()
+		session.And(
+			"((transaction_time<? AND transaction_time<?) OR (transaction_time>=? AND transaction_time<?))",
+			smartFinanceLegacyTransactionTimeCutoff,
+			endUnix,
+			smartFinanceLegacyTransactionTimeCutoff,
+			utils.GetMinTransactionTimeFromUnixTime(endUnix),
+		)
 	}
 
 	if txType != "" {
@@ -1416,7 +1519,7 @@ func (a *SmartFinanceApi) transactionResponse(c *core.WebContext, tx *models.Tra
 
 	return &smartFinanceTransactionResponse{
 		Id:          utils.Int64ToString(tx.TransactionId),
-		Date:        smartFinanceDateFromUnix(tx.TransactionTime),
+		Date:        smartFinanceDateFromTransactionTime(tx.TransactionTime),
 		Description: smartFinanceDescriptionFromComment(tx.Comment),
 		Merchant:    smartFinanceMerchantFromComment(tx.Comment),
 		Amount:      smartFinanceAmountToString(absInt64(tx.Amount)),
@@ -1629,6 +1732,16 @@ func smartFinanceParseDate(value string) (time.Time, error) {
 
 func smartFinanceDateFromUnix(value int64) string {
 	return time.Unix(value, 0).Format("2006-01-02")
+}
+
+func smartFinanceDateFromTransactionTime(value int64) string {
+	// Older SmartFinance rows used raw Unix seconds. Keep them readable while all
+	// new writes use the application's millisecond-slot transaction time format.
+	if value < smartFinanceLegacyTransactionTimeCutoff {
+		return smartFinanceDateFromUnix(value)
+	}
+
+	return smartFinanceDateFromUnix(utils.GetUnixTimeFromTransactionTime(value))
 }
 
 func smartFinanceCategorize(description string, txType smartFinanceTransactionType) string {
@@ -1866,7 +1979,11 @@ func smartFinanceMonthlyTrends(transactions []*models.Transaction) []core.O {
 
 	months := map[string]*monthlyTotal{}
 	for _, tx := range transactions {
-		month := time.Unix(tx.TransactionTime, 0).Format("2006-01")
+		transactionUnixTime := tx.TransactionTime
+		if transactionUnixTime >= smartFinanceLegacyTransactionTimeCutoff {
+			transactionUnixTime = utils.GetUnixTimeFromTransactionTime(transactionUnixTime)
+		}
+		month := time.Unix(transactionUnixTime, 0).Format("2006-01")
 		if months[month] == nil {
 			months[month] = &monthlyTotal{}
 		}

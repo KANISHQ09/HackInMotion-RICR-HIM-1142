@@ -2,11 +2,8 @@
 
 import { memo, useMemo, useState, type FormEvent } from "react"
 import { CalendarPlus, Loader2, Save, X } from "lucide-react"
-import {
-  createPlannedAddOn,
-  type PlannedAddOn,
-  type PlannedAddOnPayload,
-} from "@/lib/api-client"
+import type { PlannedAddOn, PlannedAddOnPayload } from "@/api/types"
+import { useCreatePlannedAddOn } from "@/hooks/use-planned-addons-api"
 
 type PlannedAddOnModalProps = {
   isOpen: boolean
@@ -42,9 +39,10 @@ export const PlannedAddOnModal = memo(function PlannedAddOnModal({
   onClose,
   onCreated,
 }: PlannedAddOnModalProps) {
+  const createPlannedAddOn = useCreatePlannedAddOn()
   const [form, setForm] = useState<PlannedAddOnPayload>(() => createInitialForm())
   const [error, setError] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmitting = createPlannedAddOn.isPending
   const today = useMemo(() => formatDateInput(new Date()), [])
 
   if (!isOpen) return null
@@ -59,10 +57,9 @@ export const PlannedAddOnModal = memo(function PlannedAddOnModal({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError("")
-    setIsSubmitting(true)
 
     try {
-      const created = await createPlannedAddOn({
+      const created = await createPlannedAddOn.mutateAsync({
         ...form,
         description: form.description.trim(),
         merchant: form.merchant.trim(),
@@ -75,8 +72,6 @@ export const PlannedAddOnModal = memo(function PlannedAddOnModal({
       onClose()
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to save this add-on.")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 

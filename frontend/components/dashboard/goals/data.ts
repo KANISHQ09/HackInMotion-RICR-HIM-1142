@@ -9,14 +9,14 @@ export type Period = "6M" | "1Y" | "3Y"
 
 export type Goal = {
   icon: LucideIcon
-  name: "Emergency Fund" | "New Vehicle" | "Kyoto Trip"
+  name: string
   saved: number
   target: number
   progress: number
   completion: string
 }
 
-export type GoalName = Goal["name"]
+export type GoalName = string
 
 type ChartBar = {
   height: number
