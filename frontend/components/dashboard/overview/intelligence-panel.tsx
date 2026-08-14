@@ -1,4 +1,5 @@
 import { memo } from "react"
+import Link from "next/link"
 import { Lightbulb, Sparkles } from "lucide-react"
 import { insights } from "@/components/dashboard/overview/data"
 
@@ -21,12 +22,12 @@ export const IntelligencePanel = memo(function IntelligencePanel() {
                 <h3 className="text-sm font-semibold text-zinc-950">{insight.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-600">{insight.copy}</p>
                 {insight.action ? (
-                  <button
-                    type="button"
-                    className="mt-4 min-h-9 rounded-lg bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
+                  <Link
+                    href="/dashboard/budgets#upcoming-bills"
+                    className="mt-4 inline-flex min-h-9 items-center rounded-lg bg-zinc-950 px-4 text-xs font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
                   >
                     {insight.action}
-                  </button>
+                  </Link>
                 ) : null}
               </div>
             </div>

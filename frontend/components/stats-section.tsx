@@ -96,7 +96,7 @@ export function StatsSection() {
                   muted
                   playsInline
                   className="w-full h-full object-cover"
-                  src="video.mp4"
+                  src="video.webm"
                 />
               </div>
 

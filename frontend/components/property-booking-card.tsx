@@ -27,7 +27,7 @@ export function PropertyBookingCard({
   availableDate,
   image,
   pricePerNight,
-  currency = "$",
+  currency = "₹",
   propertyType,
   features = [],
   amenities = [],
@@ -128,7 +128,9 @@ export function PropertyBookingCard({
             </div>
           </div>
           <button
+            type="button"
             onClick={onBook}
+            disabled={!onBook}
             className="rounded-xl bg-foreground px-6 py-3 font-semibold text-background transition-colors hover:bg-foreground/90 text-sm"
           >
             Explore

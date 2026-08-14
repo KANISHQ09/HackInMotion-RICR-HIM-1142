@@ -31,9 +31,9 @@ export type UpcomingBill = {
 }
 
 export const budgetSummary = {
-  total: 4500,
-  spent: 3150,
-  remaining: 1350,
+  total: 45000,
+  spent: 31500,
+  remaining: 13500,
   utilizedPercentage: 70,
 } as const
 
@@ -42,10 +42,10 @@ export const budgets = [
     icon: Utensils,
     name: "Food & Dining",
     frequency: "Monthly",
-    spent: 450,
-    total: 800,
+    spent: 4500,
+    total: 8000,
     progress: 56,
-    remaining: "$350 left",
+    remaining: "₹3,500 left",
     status: "On Track",
     tone: "good",
   },
@@ -53,10 +53,10 @@ export const budgets = [
     icon: ShoppingBag,
     name: "Shopping",
     frequency: "Monthly",
-    spent: 420,
-    total: 500,
+    spent: 4200,
+    total: 5000,
     progress: 84,
-    remaining: "$80 left",
+    remaining: "₹800 left",
     status: "Nearing Limit",
     tone: "warning",
   },
@@ -64,8 +64,8 @@ export const budgets = [
     icon: Home,
     name: "Housing",
     frequency: "Fixed",
-    spent: 2000,
-    total: 2000,
+    spent: 20000,
+    total: 20000,
     progress: 100,
     remaining: "Paid",
     tone: "fixed",
@@ -74,10 +74,10 @@ export const budgets = [
     icon: Clapperboard,
     name: "Entertainment",
     frequency: "Monthly",
-    spent: 350,
-    total: 300,
+    spent: 3500,
+    total: 3000,
     progress: 100,
-    remaining: "-$50 over budget",
+    remaining: "-₹500 over budget",
     status: "Exceeded",
     tone: "danger",
   },
@@ -88,26 +88,38 @@ export const upcomingBills = [
     icon: Flame,
     name: "Netflix",
     detail: "Oct 15 - Entertainment",
-    amount: 15.99,
+    amount: 649,
   },
   {
     icon: Zap,
     name: "Electric Utility",
     detail: "Oct 18 - Housing",
-    amount: 124.5,
+    amount: 2450,
   },
   {
     icon: Sparkles,
-    name: "Equinox",
+    name: "Cult.fit",
     detail: "Oct 22 - Health",
-    amount: 180,
+    amount: 1800,
+  },
+  {
+    icon: Home,
+    name: "Rent",
+    detail: "Oct 28 - Housing",
+    amount: 24000,
+  },
+  {
+    icon: Utensils,
+    name: "Swiggy One",
+    detail: "Oct 30 - Food & Dining",
+    amount: 899,
   },
 ] satisfies readonly UpcomingBill[]
 
 export function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: Number.isInteger(value) ? 0 : 2,
   }).format(value)
 }

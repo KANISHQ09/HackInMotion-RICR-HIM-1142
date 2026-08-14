@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { CalendarDays, MoreHorizontal } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 import type { Goal } from "@/components/dashboard/goals/data"
 import { cn } from "@/lib/utils"
 
@@ -12,22 +12,15 @@ export const GoalCard = memo(function GoalCard({ goal }: { goal: Goal }) {
         <span className="grid h-12 w-12 place-items-center rounded-lg bg-[#f1edec] text-zinc-950">
           <Icon className="h-6 w-6" aria-hidden="true" />
         </span>
-        <button
-          type="button"
-          aria-label={`More options for ${goal.name}`}
-          className="grid h-9 w-9 place-items-center rounded-full text-zinc-500 transition hover:bg-[#f1edec] hover:text-zinc-950"
-        >
-          <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
-        </button>
       </div>
 
       <div className="flex-1">
         <h3 className="text-lg font-medium tracking-normal text-zinc-950">{goal.name}</h3>
         <p className="mt-1">
           <strong className="font-serif text-[31px] font-semibold leading-tight tracking-normal text-zinc-950">
-            ${goal.saved.toLocaleString()}
+            ₹{goal.saved.toLocaleString("en-IN")}
           </strong>
-          <span className="ml-1 text-zinc-500">/ ${goal.target.toLocaleString()}</span>
+          <span className="ml-1 text-zinc-500">/ ₹{goal.target.toLocaleString("en-IN")}</span>
         </p>
       </div>
 

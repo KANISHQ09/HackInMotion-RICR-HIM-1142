@@ -69,7 +69,7 @@ export const ProjectionCard = memo(function ProjectionCard({
 
       <div
         className="relative flex h-[270px] items-end gap-2 overflow-hidden rounded-lg border border-zinc-200/80 bg-[#f7f3f2] bg-[linear-gradient(to_top,#ebe7e6_1px,transparent_1px),linear-gradient(to_right,#ebe7e6_1px,transparent_1px)] bg-[size:100%_20%,10%_100%] px-3 pb-6 pt-12 sm:gap-3 sm:px-6"
-        aria-label={`${period} projection ending at $${projectedTotal.toLocaleString()}`}
+        aria-label={`${period} projection ending at ₹${projectedTotal.toLocaleString("en-IN")}`}
       >
         {chartBars.map((bar, index) => (
           <div
@@ -88,7 +88,7 @@ export const ProjectionCard = memo(function ProjectionCard({
         ))}
         <div className="absolute inset-x-0 top-[10%] border-t-2 border-dashed border-emerald-700/50">
           <span className="absolute right-4 top-[-1.4rem] rounded bg-[#f7f3f2] px-1.5 py-0.5 text-[11px] font-semibold uppercase text-emerald-700">
-            Target: ${(target / 1000).toFixed(0)}k
+            Target: ₹{(target / 1000).toFixed(0)}k
           </span>
         </div>
       </div>
@@ -97,7 +97,7 @@ export const ProjectionCard = memo(function ProjectionCard({
         <label className="grid gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
           Monthly Contribution
           <span className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500">₹</span>
             <input
               type="number"
               min="1"
@@ -130,7 +130,7 @@ export const ProjectionCard = memo(function ProjectionCard({
       </form>
 
       <p className="mt-4 text-sm font-semibold text-emerald-700" aria-live="polite">
-        At ${contribution.toLocaleString()}/month, your {goalName} target is approximately{" "}
+        At ₹{contribution.toLocaleString("en-IN")}/month, your {goalName} target is approximately{" "}
         {monthsRemaining} months away.
       </p>
     </article>

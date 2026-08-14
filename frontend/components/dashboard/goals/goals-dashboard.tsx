@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Plus } from "lucide-react"
 import { GoalCard } from "@/components/dashboard/goals/goal-card"
 import { InsightCard } from "@/components/dashboard/goals/insight-card"
 import { MilestonesCard } from "@/components/dashboard/goals/milestones-card"
@@ -36,7 +35,7 @@ export function GoalsDashboard() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1296px] flex-col gap-14 px-4 pb-28 pt-10 sm:px-6 md:px-12 md:py-20 lg:gap-20">
-      <header className="flex flex-col gap-6 border-b border-zinc-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <header className="border-b border-zinc-200/80 pb-6">
         <div>
           <h1 className="font-serif text-4xl font-semibold tracking-normal text-zinc-950 md:text-5xl">
             Goals
@@ -45,13 +44,6 @@ export function GoalsDashboard() {
             Track and manage your progression towards future milestones.
           </p>
         </div>
-        <button
-          type="button"
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 px-6 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:px-10"
-        >
-          <Plus className="h-4 w-4" aria-hidden="true" />
-          New Goal
-        </button>
       </header>
 
       <section aria-labelledby="active-goals">

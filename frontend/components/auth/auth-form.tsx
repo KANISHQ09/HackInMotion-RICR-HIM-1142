@@ -157,7 +157,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             className="mt-1 h-4 w-4 accent-zinc-950"
           />
           <label htmlFor="terms" className="text-sm leading-6 text-zinc-600">
-            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            I agree to the Terms of Service and Privacy Policy.
           </label>
         </div>
       )}

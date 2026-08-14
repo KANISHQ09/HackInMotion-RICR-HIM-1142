@@ -78,7 +78,7 @@ export const PlannedAddOnsCard = memo(function PlannedAddOnsCard({
                     <CircleDollarSign className="h-4 w-4 shrink-0" aria-hidden="true" />
                     Amount
                   </span>
-                  <strong className="text-zinc-950">INR {addOn.amount}</strong>
+                  <strong className="text-zinc-950">₹{addOn.amount}</strong>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex min-w-0 items-center gap-2">
