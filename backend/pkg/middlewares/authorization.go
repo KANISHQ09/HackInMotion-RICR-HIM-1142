@@ -190,6 +190,9 @@ func getTokenClaims(c *core.WebContext, source TokenSourceType) (*core.UserToken
 
 	if err != nil {
 		log.Warnf(c, "[authorization.getTokenClaims] failed to parse token, because %s", err.Error())
+		if source == TOKEN_SOURCE_TYPE_COOKIE {
+			return nil, "", errs.ErrUnauthorizedAccess
+		}
 		return nil, "", errs.Or(err, errs.ErrUnauthorizedAccess)
 	}
 

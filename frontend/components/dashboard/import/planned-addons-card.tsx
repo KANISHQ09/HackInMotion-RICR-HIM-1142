@@ -2,7 +2,7 @@
 
 import { memo } from "react"
 import { CalendarDays, CircleDollarSign, Loader2 } from "lucide-react"
-import type { PlannedAddOn } from "@/lib/api-client"
+import type { PlannedAddOn } from "@/api/types"
 import { cn } from "@/lib/utils"
 
 type PlannedAddOnsCardProps = {

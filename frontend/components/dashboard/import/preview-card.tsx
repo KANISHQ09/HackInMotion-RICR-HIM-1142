@@ -1,7 +1,9 @@
-import { memo } from "react"
+import { memo, useState } from "react"
 import {
   AlertTriangle,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
   CopyCheck,
   Table2,
   XCircle,
@@ -23,8 +25,9 @@ export const PreviewCard = memo(function PreviewCard({
   parseResult,
   importSummary,
 }: PreviewCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
   const hasRows = parseResult.rows.length > 0
-  const visibleRows = hasRows ? parseResult.rows.slice(0, 8) : []
+  const visibleRows = hasRows ? (isExpanded ? parseResult.rows : parseResult.rows.slice(0, 8)) : []
 
   return (
     <section
@@ -94,6 +97,20 @@ export const PreviewCard = memo(function PreviewCard({
           </tbody>
         </table>
       </div>
+
+      {parseResult.rows.length > 8 && (
+        <div className="flex justify-center border-t border-zinc-200/70 bg-white p-4">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-zinc-700 transition hover:bg-zinc-50"
+            aria-expanded={isExpanded}
+            onClick={() => setIsExpanded((current) => !current)}
+          >
+            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {isExpanded ? "Show fewer rows" : `Show all ${parseResult.rows.length} rows`}
+          </button>
+        </div>
+      )}
 
       <div className="grid place-items-center gap-3 bg-[#fdf8f8]/50 p-6 text-center md:p-10">
         {parseResult.error ? (

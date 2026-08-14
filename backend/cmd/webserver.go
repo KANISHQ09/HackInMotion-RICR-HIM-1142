@@ -187,11 +187,13 @@ func startWebServer(c *core.CliContext) error {
 		}
 
 		protectedRoute := apiRoute.Group("")
-		protectedRoute.Use(bindMiddleware(middlewares.JWTAuthorizationByHeader(config), config))
+		protectedRoute.Use(bindMiddleware(middlewares.JWTAuthorizationByCookie(config), config))
 		{
 			protectedRoute.GET("/auth/me", bindApi(api.SmartFinance.CurrentUserHandler, config))
+			protectedRoute.POST("/auth/logout", bindApi(api.SmartFinance.LogoutHandler, config))
 			protectedRoute.GET("/transactions", bindApi(api.SmartFinance.ListTransactionsHandler, config))
 			protectedRoute.POST("/transactions", bindApi(api.SmartFinance.CreateTransactionHandler, config))
+			protectedRoute.GET("/transactions/import", bindApi(api.SmartFinance.ListImportedTransactionsHandler, config))
 			protectedRoute.POST("/transactions/import", bindApi(api.SmartFinance.ImportTransactionsHandler, config))
 			protectedRoute.PUT("/transactions/:id", bindApi(api.SmartFinance.UpdateTransactionHandler, config))
 			protectedRoute.DELETE("/transactions/:id", bindApi(api.SmartFinance.DeleteTransactionHandler, config))
@@ -270,6 +272,10 @@ func bindApiWithTokenUpdate(fn core.ApiHandlerFunc, config *settings.Config) gin
 	return func(ginCtx *gin.Context) {
 		c := core.WrapWebContext(ginCtx, config.TrustedProxyIPs)
 		result, err := fn(c)
+
+		if err == nil {
+			c.SetTokenStringToCookie(c.GetTextualToken(), int(config.TokenExpiredTime), "/", config.IsHTTPS())
+		}
 
 		if err == nil && config.MapProvider == settings.AmapProvider && config.AmapSecurityVerificationMethod == settings.AmapSecurityVerificationInternalProxyMethod {
 			middlewares.AmapApiProxyAuthCookie(c, config)

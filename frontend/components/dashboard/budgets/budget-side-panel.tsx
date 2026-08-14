@@ -1,15 +1,27 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { ChevronRight, Sparkles } from "lucide-react"
-import { formatCurrency, upcomingBills } from "@/components/dashboard/budgets/data"
+import { CalendarDays, ChevronRight, Sparkles, type LucideIcon } from "lucide-react"
+import { formatCurrency, upcomingBills, type UpcomingBill } from "@/components/dashboard/budgets/data"
 
-export function BudgetSidePanel() {
+type BudgetSidePanelProps = {
+  upcomingBills?: UpcomingBill[]
+  insight?: string
+  isLoading?: boolean
+  error?: string
+}
+
+export function BudgetSidePanel({
+  upcomingBills: bills = upcomingBills,
+  insight = "Add budgets and transactions to generate spending guidance for this month.",
+  isLoading = false,
+  error = "",
+}: BudgetSidePanelProps) {
   const [showAllBills, setShowAllBills] = useState(false)
-  const visibleBills = showAllBills ? upcomingBills : upcomingBills.slice(0, 3)
+  const visibleBills = showAllBills ? bills : bills.slice(0, 3)
   const totalUpcomingBills = useMemo(
-    () => upcomingBills.reduce((total, bill) => total + bill.amount, 0),
-    [],
+    () => bills.reduce((total, bill) => total + bill.amount, 0),
+    [bills],
   )
 
   return (
@@ -20,10 +32,13 @@ export function BudgetSidePanel() {
           Insight
         </div>
         <p className="text-base leading-7 text-zinc-700">
-          You are spending 15% more on <strong className="font-semibold text-zinc-950">Shopping</strong> this
-          month compared to last month. Consider holding off on non-essential purchases until next week to stay
-          within your ₹5,000 limit.
+          {isLoading ? "Loading live budget insight..." : insight}
         </p>
+        {error ? (
+          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700" role="alert">
+            {error}
+          </p>
+        ) : null}
       </article>
 
       <article id="upcoming-bills" className="rounded-lg border border-zinc-200/70 bg-white p-6 shadow-[0_18px_45px_-34px_rgba(24,24,27,0.35)] xl:flex-1">
@@ -33,13 +48,25 @@ export function BudgetSidePanel() {
               Upcoming Bills
             </h2>
             <p className="mt-1 text-sm font-medium text-zinc-500">
-              {upcomingBills.length} bills totaling {formatCurrency(totalUpcomingBills)}
+              {bills.length} bills totaling {formatCurrency(totalUpcomingBills)}
             </p>
           </div>
         </div>
         <ul className="grid" aria-label="Upcoming bills">
+          {isLoading ? (
+            <li className="rounded-lg border border-dashed border-zinc-300 bg-[#f7f3f2]/60 p-4 text-center text-sm font-medium text-zinc-500">
+              Loading planned add-ons...
+            </li>
+          ) : null}
+
+          {!isLoading && bills.length === 0 ? (
+            <li className="rounded-lg border border-dashed border-zinc-300 bg-[#f7f3f2]/60 p-4 text-center text-sm font-medium text-zinc-500">
+              No planned expenses yet.
+            </li>
+          ) : null}
+
           {visibleBills.map((bill) => {
-            const Icon = bill.icon
+            const Icon: LucideIcon = bill.icon ?? CalendarDays
 
             return (
               <li
@@ -61,14 +88,16 @@ export function BudgetSidePanel() {
           })}
         </ul>
 
-        <button
-          type="button"
-          onClick={() => setShowAllBills((current) => !current)}
-          className="mt-6 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded border border-zinc-200/80 px-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-700 transition hover:bg-[#ebe7e6]"
-        >
-          {showAllBills ? "Show Fewer Bills" : "View All Bills"}
-          <ChevronRight className={`h-4 w-4 transition ${showAllBills ? "rotate-90" : ""}`} aria-hidden="true" />
-        </button>
+        {bills.length > 3 ? (
+          <button
+            type="button"
+            onClick={() => setShowAllBills((current) => !current)}
+            className="mt-6 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded border border-zinc-200/80 px-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-700 transition hover:bg-[#ebe7e6]"
+          >
+            {showAllBills ? "Show Fewer Bills" : "View All Bills"}
+            <ChevronRight className={`h-4 w-4 transition ${showAllBills ? "rotate-90" : ""}`} aria-hidden="true" />
+          </button>
+        ) : null}
       </article>
     </aside>
   )

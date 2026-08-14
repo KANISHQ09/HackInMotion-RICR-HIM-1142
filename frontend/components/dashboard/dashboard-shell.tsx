@@ -3,10 +3,10 @@
 import type { ReactNode } from "react"
 import { memo, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { clearAuthSession } from "@/lib/auth-storage"
 import { DashboardMobileNav } from "@/components/dashboard/dashboard-mobile-nav"
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar"
 import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar"
+import { useLogoutUser } from "@/hooks/use-auth-api"
 import { cn } from "@/lib/utils"
 
 type DashboardShellProps = {
@@ -21,11 +21,11 @@ export const DashboardShell = memo(function DashboardShell({
   showMobileNav = true,
 }: DashboardShellProps) {
   const router = useRouter()
+  const logoutUser = useLogoutUser()
 
   const handleLogout = useCallback(() => {
-    clearAuthSession()
-    router.replace("/login")
-  }, [router])
+    void logoutUser.mutateAsync().finally(() => router.replace("/login"))
+  }, [logoutUser, router])
 
   return (
     <div className="min-h-screen bg-[#fdf8f8] text-zinc-950">

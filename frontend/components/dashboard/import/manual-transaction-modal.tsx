@@ -2,11 +2,8 @@
 
 import { memo, useState, type FormEvent } from "react"
 import { Loader2, ReceiptText, Save, X } from "lucide-react"
-import {
-  createTransaction,
-  type Transaction,
-  type TransactionPayload,
-} from "@/lib/api-client"
+import type { Transaction, TransactionPayload } from "@/api/types"
+import { useCreateTransaction } from "@/hooks/use-transactions-api"
 
 type ManualTransactionModalProps = {
   isOpen: boolean
@@ -16,12 +13,12 @@ type ManualTransactionModalProps = {
 
 function createInitialForm(): TransactionPayload {
   return {
-    amount: "₹450",
-    date: "12 Aug",
-    merchant: "Zomato",
-    description: "Food delivery",
+    amount: "",
+    date: "",
+    merchant: "",
+    description: "",
     type: "debit",
-    category: "Food",
+    category: "",
   }
 }
 
@@ -30,9 +27,10 @@ export const ManualTransactionModal = memo(function ManualTransactionModal({
   onClose,
   onCreated,
 }: ManualTransactionModalProps) {
+  const createTransaction = useCreateTransaction()
   const [form, setForm] = useState<TransactionPayload>(() => createInitialForm())
   const [error, setError] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmitting = createTransaction.isPending
 
   if (!isOpen) return null
 
@@ -46,10 +44,9 @@ export const ManualTransactionModal = memo(function ManualTransactionModal({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError("")
-    setIsSubmitting(true)
 
     try {
-      const created = await createTransaction({
+      const created = await createTransaction.mutateAsync({
         ...form,
         amount: form.amount.trim(),
         date: form.date.trim(),
@@ -62,8 +59,6 @@ export const ManualTransactionModal = memo(function ManualTransactionModal({
       onClose()
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to save this transaction.")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 

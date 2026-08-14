@@ -8,13 +8,14 @@ import {
   type DragEvent,
   type KeyboardEvent,
 } from "react"
-import { importTransactions, type TransactionImportSummary } from "@/lib/api-client"
+import type { TransactionImportSummary } from "@/api/types"
 import {
   parseTransactionCsv,
   type TransactionCsvParseResult,
 } from "@/components/dashboard/import/csv-parser"
 import { formatFileSize, isCsvFile } from "@/components/dashboard/import/file-utils"
 import { maxFileSize } from "@/components/dashboard/import/constants"
+import { useImportTransactions } from "@/hooks/use-transactions-api"
 
 const emptyParseResult: TransactionCsvParseResult = {
   rows: [],
@@ -26,13 +27,14 @@ const emptyParseResult: TransactionCsvParseResult = {
 }
 
 export function useTransactionImport() {
+  const importTransactions = useImportTransactions()
   const inputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState("")
   const [isDragging, setIsDragging] = useState(false)
   const [parseResult, setParseResult] = useState<TransactionCsvParseResult>(emptyParseResult)
   const [importSummary, setImportSummary] = useState<TransactionImportSummary | null>(null)
-  const [isImporting, setIsImporting] = useState(false)
+  const isImporting = importTransactions.isPending
 
   const fileDetails = useMemo(() => {
     if (!file) return ""
@@ -55,7 +57,7 @@ export function useTransactionImport() {
 
     if (selectedFile.size > maxFileSize) {
       setFile(null)
-      setError("The selected file must be smaller than 10MB.")
+      setError("The selected file must be smaller than 5MB.")
       return
     }
 
@@ -135,17 +137,13 @@ export function useTransactionImport() {
 
     setError("")
     setImportSummary(null)
-    setIsImporting(true)
-
     try {
-      const summary = await importTransactions(file)
+      const summary = await importTransactions.mutateAsync(file)
       setImportSummary(summary)
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unable to import this CSV file.")
-    } finally {
-      setIsImporting(false)
     }
-  }, [file])
+  }, [file, importTransactions])
 
   return {
     inputRef,

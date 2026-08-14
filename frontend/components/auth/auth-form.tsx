@@ -9,8 +9,7 @@ import { AuthField } from "@/components/auth/auth-field"
 import { AuthStatusMessage } from "@/components/auth/auth-status-message"
 import { AuthSubmitButton } from "@/components/auth/auth-submit-button"
 import { PasswordStrength, getPasswordStrength } from "@/components/auth/password-strength"
-import { loginUser, registerUser } from "@/lib/api-client"
-import { saveAuthSession } from "@/lib/auth-storage"
+import { useLoginUser, useRegisterUser } from "@/hooks/use-auth-api"
 
 type AuthMode = "register" | "login"
 
@@ -21,12 +20,14 @@ type AuthFormProps = {
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter()
   const isRegister = mode === "register"
+  const loginUser = useLoginUser()
+  const registerUser = useRegisterUser()
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const passwordStrength = useMemo(() => getPasswordStrength(password), [password])
+  const isSubmitting = loginUser.isPending || registerUser.isPending
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -55,11 +56,9 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
 
     try {
-      setIsSubmitting(true)
-      const auth = isRegister
-        ? await registerUser(name, email, password)
-        : await loginUser(email, password)
-      saveAuthSession(auth.token, auth.user)
+      await (isRegister
+        ? registerUser.mutateAsync({ name, email, password })
+        : loginUser.mutateAsync({ email, password }))
       setSuccess(
         isRegister
           ? "Account created. Taking you back to Spendly."
@@ -68,8 +67,6 @@ export function AuthForm({ mode }: AuthFormProps) {
       window.setTimeout(() => router.replace("/dashboard"), 650)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to complete the request")
-    } finally {
-      setIsSubmitting(false)
     }
   }
 

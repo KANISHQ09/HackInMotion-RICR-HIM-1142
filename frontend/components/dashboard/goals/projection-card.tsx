@@ -2,8 +2,8 @@ import type { FormEvent } from "react"
 import { memo } from "react"
 import {
   chartBars,
-  goals,
   periods,
+  type Goal,
   type GoalName,
   type Period,
 } from "@/components/dashboard/goals/data"
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 type ProjectionCardProps = {
   contribution: number
   goalName: GoalName
+  goals: readonly Goal[]
   monthsRemaining: number
   period: Period
   projectedTotal: number
@@ -25,6 +26,7 @@ type ProjectionCardProps = {
 export const ProjectionCard = memo(function ProjectionCard({
   contribution,
   goalName,
+  goals,
   monthsRemaining,
   period,
   projectedTotal,
@@ -114,6 +116,7 @@ export const ProjectionCard = memo(function ProjectionCard({
             value={goalName}
             onChange={(event) => onGoalNameChange(event.target.value as GoalName)}
             className="min-h-11 w-full rounded-lg border border-zinc-200 bg-[#f7f3f2] px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-zinc-500"
+            disabled={goals.length === 0}
           >
             {goals.map((goal) => (
               <option key={goal.name}>{goal.name}</option>

@@ -1,12 +1,13 @@
 import { memo } from "react"
 import Link from "next/link"
-import { ArrowLeft, Plus } from "lucide-react"
+import { ArrowLeft, CalendarPlus, Plus } from "lucide-react"
 
 type PageHeaderProps = {
   onAddClick: () => void
+  onPlanClick: () => void
 }
 
-export const PageHeader = memo(function PageHeader({ onAddClick }: PageHeaderProps) {
+export const PageHeader = memo(function PageHeader({ onAddClick, onPlanClick }: PageHeaderProps) {
   return (
     <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
       <div className="grid gap-2">
@@ -24,14 +25,24 @@ export const PageHeader = memo(function PageHeader({ onAddClick }: PageHeaderPro
           Upload your bank statements to automatically categorize and track your spending patterns.
         </p>
       </div>
-      <button
-        type="button"
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:w-auto"
-        onClick={onAddClick}
-      >
-        <Plus className="h-4 w-4 shrink-0" aria-hidden="true" />
-        <span className="whitespace-nowrap">Add Transaction</span>
-      </button>
+      <div className="grid gap-3 sm:flex sm:w-auto">
+        <button
+          type="button"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-5 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-50 sm:w-auto"
+          onClick={onPlanClick}
+        >
+          <CalendarPlus className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="whitespace-nowrap">Plan Add-on</span>
+        </button>
+        <button
+          type="button"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 sm:w-auto"
+          onClick={onAddClick}
+        >
+          <Plus className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="whitespace-nowrap">Add Transaction</span>
+        </button>
+      </div>
     </header>
   )
 })
