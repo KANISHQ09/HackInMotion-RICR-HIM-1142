@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 export const InsightCard = memo(function InsightCard() {
   return (
@@ -11,15 +11,8 @@ export const InsightCard = memo(function InsightCard() {
       <h3 className="font-semibold tracking-normal text-zinc-950">Accelerate Your Timeline</h3>
       <p className="mt-1 text-sm leading-6 text-zinc-600">
         By increasing your monthly contribution to the <strong>Emergency Fund</strong> by just
-        $150, you could reach your target 2 months earlier.
+        ₹150, you could reach your target 2 months earlier.
       </p>
-      <button
-        type="button"
-        className="mt-4 inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700 transition hover:text-emerald-900"
-      >
-        Apply Suggestion
-        <ArrowRight className="h-4 w-4" aria-hidden="true" />
-      </button>
     </article>
   )
 })

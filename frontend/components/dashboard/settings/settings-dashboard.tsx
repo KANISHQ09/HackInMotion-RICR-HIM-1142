@@ -70,7 +70,7 @@ export const SettingsDashboard = memo(function SettingsDashboard() {
           <StatusCard
             icon={Globe2}
             label="Region"
-            value="USD, English"
+            value="INR, English"
           />
         </div>
       </section>

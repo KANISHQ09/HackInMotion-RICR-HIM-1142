@@ -54,7 +54,7 @@ export function HeroSection() {
             height: `${heightVh}vh`,
           }}
         >
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" src="video.mp4" />
+          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" src="video.webm" />
         </div>
       </div>
     </section>

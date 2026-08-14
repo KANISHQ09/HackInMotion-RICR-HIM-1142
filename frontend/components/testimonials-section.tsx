@@ -13,7 +13,7 @@ const testimonials = [
   {
     name: "Sarah Jenkins",
     role: "Freelance Designer",
-    content: "The Subscription Detector flagged $45/mo in forgotten services I didn't even realize I was paying for!",
+    content: "The Subscription Detector flagged ₹450/mo in forgotten services I didn't even realize I was paying for!",
     avatar: "/placeholder.svg?height=48&width=48",
   },
   {

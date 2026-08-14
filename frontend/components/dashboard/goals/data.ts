@@ -59,11 +59,11 @@ export const milestones = [
 ] as const
 
 export const chartBars: readonly ChartBar[] = [
-  { height: 20, value: "$4k" },
-  { height: 35, value: "$7k" },
-  { height: 45, value: "$9k" },
-  { height: 60, value: "$12k" },
-  { height: 75, value: "$15.4k", tone: "current" },
-  { height: 90, value: "$18k", tone: "future" },
-  { height: 100, value: "$20k", tone: "future" },
+  { height: 20, value: "₹4k" },
+  { height: 35, value: "₹7k" },
+  { height: 45, value: "₹9k" },
+  { height: 60, value: "₹12k" },
+  { height: 75, value: "₹15.4k", tone: "current" },
+  { height: 90, value: "₹18k", tone: "future" },
+  { height: 100, value: "₹20k", tone: "future" },
 ] as const

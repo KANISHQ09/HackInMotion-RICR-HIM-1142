@@ -42,7 +42,7 @@ export function RevenueBreakdownChartCard({
           <p className="text-sm text-slate-500">{period}</p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-slate-900">${totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-slate-900">₹{totalRevenue.toLocaleString("en-IN")}</p>
           <p className={`text-sm font-medium ${growth >= 0 ? "text-emerald-600" : "text-red-600"}`}>
             {growth >= 0 ? "+" : ""}
             {growth}% vs last period
@@ -59,7 +59,7 @@ export function RevenueBreakdownChartCard({
               ))}
             </Pie>
             <Tooltip
-              formatter={(value) => [`$${Number(value ?? 0).toLocaleString()}`, "Revenue"]}
+              formatter={(value) => [`₹${Number(value ?? 0).toLocaleString("en-IN")}`, "Revenue"]}
               contentStyle={{
                 backgroundColor: "white",
                 border: "1px solid #e2e8f0",

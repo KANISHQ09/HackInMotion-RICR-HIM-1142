@@ -3,28 +3,28 @@ import { Twitter, Linkedin, Instagram, Facebook } from "lucide-react"
 
 const footerLinks = {
   product: [
-    { label: "Transactions", href: "#" },
-    { label: "Categorization", href: "#" },
-    { label: "Health Score", href: "#" },
-    { label: "AI Assistant", href: "#" },
+    { label: "Transactions", href: "/dashboard/import-transactions" },
+    { label: "Categorization", href: "/#features" },
+    { label: "Health Score", href: "/dashboard" },
+    { label: "AI Assistant", href: "/dashboard" },
   ],
   company: [
-    { label: "About", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Press", href: "#" },
-    { label: "Blog", href: "#" },
+    { label: "About", href: "/#features" },
+    { label: "Careers", href: "/#contact" },
+    { label: "Press", href: "/#contact" },
+    { label: "Blog", href: "/#stats-section" },
   ],
   legal: [
-    { label: "Terms", href: "#" },
-    { label: "Privacy", href: "#" },
-    { label: "Cookies", href: "#" },
-    { label: "Security", href: "#" },
+    { label: "Terms", href: "/register" },
+    { label: "Privacy", href: "/register" },
+    { label: "Cookies", href: "/register" },
+    { label: "Security", href: "/dashboard/settings" },
   ],
   support: [
-    { label: "Help Center", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "FAQ", href: "#" },
-    { label: "Documentation", href: "#" },
+    { label: "Help Center", href: "/#contact" },
+    { label: "Contact", href: "/#contact" },
+    { label: "FAQ", href: "/#faq" },
+    { label: "Documentation", href: "/dashboard/import-transactions" },
   ],
 }
 
@@ -49,30 +49,26 @@ export function Footer() {
             </Link>
             <p className="text-sm text-muted-foreground mb-6">Smart Expense Analyzer & Financial Health Dashboard.</p>
             <div className="flex gap-4">
-              <Link
-                href="#"
+              <span
                 className="w-9 h-9 border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
               >
                 <Twitter className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
+              </span>
+              <span
                 className="w-9 h-9 border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
               >
                 <Linkedin className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
+              </span>
+              <span
                 className="w-9 h-9 border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
               >
                 <Instagram className="w-4 h-4" />
-              </Link>
-              <Link
-                href="#"
+              </span>
+              <span
                 className="w-9 h-9 border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
               >
                 <Facebook className="w-4 h-4" />
-              </Link>
+              </span>
             </div>
           </div>
 

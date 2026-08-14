@@ -15,14 +15,14 @@ const features = [
 ]
 
 const allTransactions = [
-  { name: "Grocery Store", amount: "-$142.50", category: "Food & Dining", color: "from-emerald-400 to-teal-500" },
-  { name: "Monthly Rent", amount: "-$1,850.00", category: "Housing & Rent", color: "from-blue-400 to-indigo-500" },
-  { name: "Netflix & Spotify", amount: "-$28.99", category: "Subscriptions", color: "from-amber-400 to-orange-500" },
-  { name: "Electric & Utility Bill", amount: "-$115.20", category: "Bills & Utilities", color: "from-rose-400 to-pink-500" },
-  { name: "Flight Tickets", amount: "-$350.00", category: "Travel & Transit", color: "from-violet-400 to-purple-500" },
-  { name: "Shopping Mall", amount: "-$89.99", category: "Shopping", color: "from-cyan-400 to-blue-500" },
-  { name: "Cinema & Concert", amount: "-$45.00", category: "Entertainment", color: "from-lime-400 to-green-500" },
-  { name: "Salary Deposit", amount: "+$4,500.00", category: "Income", color: "from-fuchsia-400 to-pink-500" },
+  { name: "Grocery Store", amount: "-₹1,420.50", category: "Food & Dining", color: "from-emerald-400 to-teal-500" },
+  { name: "Monthly Rent", amount: "-₹18,500.00", category: "Housing & Rent", color: "from-blue-400 to-indigo-500" },
+  { name: "Netflix & Spotify", amount: "-₹899.00", category: "Subscriptions", color: "from-amber-400 to-orange-500" },
+  { name: "Electric & Utility Bill", amount: "-₹2,150.20", category: "Bills & Utilities", color: "from-rose-400 to-pink-500" },
+  { name: "Flight Tickets", amount: "-₹8,350.00", category: "Travel & Transit", color: "from-violet-400 to-purple-500" },
+  { name: "Shopping Mall", amount: "-₹3,499.99", category: "Shopping", color: "from-cyan-400 to-blue-500" },
+  { name: "Cinema & Concert", amount: "-₹750.00", category: "Entertainment", color: "from-lime-400 to-green-500" },
+  { name: "Salary Deposit", amount: "+₹45,000.00", category: "Income", color: "from-fuchsia-400 to-pink-500" },
 ]
 
 export function FeaturesSection() {
@@ -54,7 +54,7 @@ export function FeaturesSection() {
         scrollPosition.current = 0
 
         const randomTransaction = allTransactions[Math.floor(Math.random() * allTransactions.length)]
-        const amount = Number.parseFloat(randomTransaction.amount.replace(/[$,]/g, ""))
+        const amount = Number.parseFloat(randomTransaction.amount.replace(/[₹$,]/g, ""))
         setBalance((prev) => prev + amount)
       }
 

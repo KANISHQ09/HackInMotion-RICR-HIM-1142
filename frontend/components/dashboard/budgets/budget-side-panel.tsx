@@ -1,7 +1,17 @@
+"use client"
+
+import { useMemo, useState } from "react"
 import { ChevronRight, Sparkles } from "lucide-react"
 import { formatCurrency, upcomingBills } from "@/components/dashboard/budgets/data"
 
 export function BudgetSidePanel() {
+  const [showAllBills, setShowAllBills] = useState(false)
+  const visibleBills = showAllBills ? upcomingBills : upcomingBills.slice(0, 3)
+  const totalUpcomingBills = useMemo(
+    () => upcomingBills.reduce((total, bill) => total + bill.amount, 0),
+    [],
+  )
+
   return (
     <aside className="grid gap-6 lg:grid-cols-2 xl:flex xl:flex-col" aria-label="Budget insights">
       <article className="rounded-lg border border-zinc-200/70 border-t-[#7a5b9c] border-t-2 bg-white p-6 shadow-[0_18px_45px_-34px_rgba(24,24,27,0.35)]">
@@ -12,16 +22,23 @@ export function BudgetSidePanel() {
         <p className="text-base leading-7 text-zinc-700">
           You are spending 15% more on <strong className="font-semibold text-zinc-950">Shopping</strong> this
           month compared to last month. Consider holding off on non-essential purchases until next week to stay
-          within your $500 limit.
+          within your ₹5,000 limit.
         </p>
       </article>
 
-      <article className="rounded-lg border border-zinc-200/70 bg-white p-6 shadow-[0_18px_45px_-34px_rgba(24,24,27,0.35)] xl:flex-1">
-        <h2 className="mb-6 border-b border-zinc-200/60 pb-2 font-serif text-2xl font-medium tracking-normal text-zinc-950">
-          Upcoming Bills
-        </h2>
+      <article id="upcoming-bills" className="rounded-lg border border-zinc-200/70 bg-white p-6 shadow-[0_18px_45px_-34px_rgba(24,24,27,0.35)] xl:flex-1">
+        <div className="mb-6 flex items-start justify-between gap-4 border-b border-zinc-200/60 pb-2">
+          <div>
+            <h2 className="font-serif text-2xl font-medium tracking-normal text-zinc-950">
+              Upcoming Bills
+            </h2>
+            <p className="mt-1 text-sm font-medium text-zinc-500">
+              {upcomingBills.length} bills totaling {formatCurrency(totalUpcomingBills)}
+            </p>
+          </div>
+        </div>
         <ul className="grid" aria-label="Upcoming bills">
-          {upcomingBills.map((bill) => {
+          {visibleBills.map((bill) => {
             const Icon = bill.icon
 
             return (
@@ -46,10 +63,11 @@ export function BudgetSidePanel() {
 
         <button
           type="button"
+          onClick={() => setShowAllBills((current) => !current)}
           className="mt-6 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded border border-zinc-200/80 px-3 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-700 transition hover:bg-[#ebe7e6]"
         >
-          View All Bills
-          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          {showAllBills ? "Show Fewer Bills" : "View All Bills"}
+          <ChevronRight className={`h-4 w-4 transition ${showAllBills ? "rotate-90" : ""}`} aria-hidden="true" />
         </button>
       </article>
     </aside>
